@@ -17,11 +17,24 @@ function ShowHome()
 	//alert(localStorage.session_id_local);
 	if(localStorage.session_id_local != undefined)
 	{
-		//alert('1');
-		$.mobile.changePage( "#welcome",null, true, true);	
+		alert('1');
+		//$.mobile.changePage( "#welcome",null, true, true);
+		$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
+			transition: 'flip',
+			changeHash: false,
+			reverse: true,
+			showLoadMsg: true
+		});				
 	}else
 	{
-		$.mobile.changePage( "#beforelogin",null, true, true);
+		alert('2');
+		//$.mobile.changePage( "#beforelogin",null, true, true);
+		$(':mobile-pagecontainer').pagecontainer('change', '#beforelogin', {
+			transition: 'flip',
+			changeHash: false,
+			reverse: true,
+			showLoadMsg: true
+		});		
 	}
 	//$.mobile.changePage( "#settings",null, true, true);	
 }
