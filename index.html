@@ -126,6 +126,11 @@ color: #000;
 		//alert('in home');	
 		if(localStorage.session_id_local != undefined)
 		{
+			alert(localStorage.getItem('session_club_info'));
+			alert(localStorage.getItem('session_contact_details_id'));
+			alert(localStorage.getItem('session_n_name'));
+			alert(localStorage.getItem('session_n_memphoto'));
+			alert(localStorage.getItem('session_n_validity'));
 			//alert('1');
 			//$.mobile.changePage( "#welcome",null, true, true);
 			$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
