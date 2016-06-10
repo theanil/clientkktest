@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Blu App</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;  font-src https://fonts.gstatic.com https://fonts.gstatic.com; script-src 'self' http://happ.phpzeal.com 'unsafe-inline' 'unsafe-eval'; object-src 'self' http://happ.phpzeal.com; "/>
+
+<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+<script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
+			
+<script type="text/javascript" charset="utf-8" src="js/jquery-1.12.3.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.validate.min.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="js/select2.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/services.js"></script>
+
+<!-- Custom Theme files -->
+
+<link rel="stylesheet" href="css/select2.min.css" rel="stylesheet" type="text/css" media="all"/>
+
+<!--Google Fonts-->
+
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<!--Google Fonts-->
+
+<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.css" />
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" type="text/css" href="css/component.css" />
+<script type="text/javascript" charset="utf-8" src="js/modernizr.custom.js"></script>
+
+<link rel="stylesheet" href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<link rel="stylesheet" href="css/style2.css" rel="stylesheet" type="text/css" media="all"/>
+
+<style>
+select:required:invalid {
+color: #999;
+}
+option[value=””][disabled] {
+display: none;
+}
+option {
+color: #000;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+ 
+ document.addEventListener("deviceready", onDeviceReady, true);
+ //alert('ok');
+ //$.mobile.fixedToolbars.show(true);
+ 
+ function onDeviceReady() 
+ {
+	 var pushNotification;
+ 
+	  console.log("Entering index.html.onDeviceReady");
+	  //var element = document.getElementById('deviceProperties');
+	  var html = "";
+	  //html = html + "<li>" + 'Device Name: ' + device.name + "</li>";
+	  ////html = html + "<li>" + 'Device Cordova: ' + device.cordova + "</li>";
+	  ////html = html + "<li>" + 'Device phonegap: ' + device.phonegap + "</li>";
+	  //html = html + "<li>" + 'Device Platform: ' + device.platform + "</li>";
+	  //html = html + "<li>" + 'Device Version: ' + device.version + "</li>";
+	  html = html + "<li>" + 'Device ID: ' + device.uuid + "</li>";
+	  console.log(html);
+
+	//$("#app-status-ul").append('<li>deviceready event received</li>').listview("refresh");
+	//$("#app-status-ul2").append('<li>deviceready event received</li>').listview("refresh");
+
+		document.addEventListener("backbutton", function(e)
+		{
+			page = $.mobile.activePage[0].id;
+			//$("#app-status-ul").append('<li>backbutton event received</li>').listview("refresh");;
+			//$("#app-status-ul2").append('<li>backbutton event received</li>').listview("refresh");
+			//$("#app-status-ul2").append('<li>Page: ' + page + '</li>').listview("refresh");
+			//alert($.mobile.activePage.attr("id"));
+			//if( $("#main").length > 0)
+			
+			localStorage.setItem("device_platform", device.platform);
+			localStorage.setItem("device_uuid", device.uuid);
+			localStorage.setItem("device_browser", navigator.userAgent);
+		
+			if( page == 'beforelogin' || page == 'welcome')
+			{
+				// call this to get a new token each time. don't call it to reuse existing token.
+				
+				popupstatus = $("#openpopupid").val();
+				if(popupstatus == '1')
+				{
+					//alert('popup is opened");
+				}else
+				{
+					e.preventDefault();
+					navigator.app.exitApp();
+				}
+				//navigator.app.backHistory();
+			}
+			else
+			{
+				navigator.app.backHistory();
+			}
+		}, false);	
+
+		//var html = "";
+		//$("#deviceProperties").html(html);
+		//$("#deviceProperties").listview('refresh');
+
+		console.log("Exiting index.html.onDeviceReady");	
+
+		//alert(localStorage.session_id_local);
+		//ShowHome();
+ }	
+
+</script>
+
+	
+	<script>
+ 	
+	$(document).on('pageinit', '#index', function()
+	{
+		//alert('in home');
+		
+		ShowHome();
+		getAvailClub();
+		//GetBuildingWingInfo();
+	});	 
+	
+	$(document).on('pageinit', '#beforelogin', function()
+	{
+		//alert('in home');
+		
+		getAvailClub();
+		ShowHome();
+		//GetBuildingWingInfo();
+	});
+
+	//pageinit - pagebeforeshow
+	$(document).on('pageinit', '#welcome', function()
+	{
+		//alert('aa');
+		//GetBuildingWingInfo();
+		//ShowHome();
+		$("#club_name_1").html(localStorage.getItem('session_club_info'));
+		$("#club_name_2").html(localStorage.getItem('session_club_info'));
+		$("#club_name_3").html(localStorage.getItem('session_club_info'));
+		$("#club_name_4").html(localStorage.getItem('session_club_info'));
+		$("#club_name_5").html(localStorage.getItem('session_club_info'));
+		$("#club_name_6").html(localStorage.getItem('session_club_info'));
+		$("#club_name_7").html(localStorage.getItem('session_club_info'));
+		$("#club_name_8").html(localStorage.getItem('session_club_info'));
+		$("#club_name_9").html(localStorage.getItem('session_club_info'));
+		$("#club_name_10").html(localStorage.getItem('session_club_info'));
+		$("#club_name_11").html(localStorage.getItem('session_club_info'));
+		$("#club_name_12").html(localStorage.getItem('session_club_info'));
+		$("#club_name_13").html(localStorage.getItem('session_club_info'));
+		$("#club_name_14").html(localStorage.getItem('session_club_info'));
+		$("#club_name_15").html(localStorage.getItem('session_club_info'));
+		$("#contact_details_id").html(localStorage.getItem('session_contact_details_id'));
+		
+		if(localStorage.getItem('session_n_name') != null)
+		{
+			mem_photo = localStorage.getItem('session_n_memphoto');
+			validity = localStorage.getItem('session_n_validity');
+			name = urldecode(localStorage.getItem('session_n_name'));
+			var photo1 = validity1 = '';
+			if(mem_photo.length>0)
+			{
+				photo1 = '<img width="70" height="70" src="' + mem_photo + '" align="left">	';
+			}
+			if(validity.length>0)
+			{
+				validity1 = '<p>Valid upto : ' + validity +'</p>';
+			}	
+			//alert(name);
+			$("#session_n_name2").html(name);	
+			$("#session_n_validity2").html(validity);
+			$("#session_n_memphoto2").html(photo1);
+			$("#contact_photo").html(photo1);
+			$("#contact_name").html(name);
+			$("#contact_validity").html(validity);
+			$("#photo_contact").html(photo1);
+		}
+		//alert(localStorage.getItem('session_contact_details_id'));
+		
+		GetIDDetailsInfo();
+		//CheckBalance();		
+		//alert(dd + " * " + mm + " * " + yy);
+		//alert(localStorage.session_id_local);
+		//alert(localStorage.device_uuid);
+		//alert(localStorage.session_validity);
+	});
+	
+	$(document).on('pageinit', '#bookonetest', function()
+	{	
+		BookOne();
+	});
+</script>	
+	
+</head>
+
+<body>
+
+<div data-role="page" class="jqm-demos" id="index" data-title="APP">
+
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+		
+		<div class="login">
+		<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+				Loading ... <br><br>
+				
+		</div>
+			
+	</div>
+</div>
+
+
+ <div data-role="page" class="jqm-demos" id="beforelogin" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+		
+		<div class="login">
+			<h2>      <img src="images/logo.png" width="300" height="152"></h2>
+			<form>
+
+				
+			 <select name="club_select" id="club_select" class="selectbook" data-role="none">
+				<option value="" disabled selected>Select Club *</option>
+			</select>
+			
+				<input name="username2" id="username2" type="tel" class="user active" placeholder="Mobile No:" data-role="none"  />
+				<input name="password" id="password" type="password" class="lock active" placeholder="OTP No/Password:" data-role="none"  />			  
+
+			<div class="forgot">
+				<div class="login-para">
+				<br/>	
+				<p><a href="#forgotpasswd"> Forgot Password? </a></p>
+				 </div><br/>
+				<div class="clear"> </div>
+			</div>
+			<div class="login-bwn">
+			
+			<!--<a href="#welcome"><input type="submit" id="submit_login1" name="submit_login1" value="SIGN IN" class="right signin" data-role="none" /></a>-->
+
+			  <input type="submit" id="submit_login2" name="submit_login2" value="SIGN IN" class="right signin" data-role="none" />
+			   <!--<a href="#signup"><input type="submit" value="SIGN UP" class="left signup" data-role="none" /></a>-->
+			</div>
+			<div class="clear"> </div>
+			</form>
+		<div class="login-bottom">
+				<h3>Sign in via Social Media</h3>
+			  <p><img src="images/line.png" width="567" height="32"></p>
+			<div class="social-icons">
+			<div class="button">
+					<a class="tw" href="#"> 	<img src="images/facebook.png" width="60" height="60" >		</a>
+					<a class="fa" href="#"> <img src="images/twitter.png" width="60" height="60">	</a>
+				
+					
+<div class="clear"> </div>
+				</div>
+				
+				
+			</div>
+		  </div>
+		</div>
+			
+		</div>
+	  </div>
+
+
+ <div data-role="page" class="jqm-demos" id="welcome" data-title="APP">
+
+	
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div data-role="popup" id="ShowmyID1" class="ui-content" style="max-width:250px">
+
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out" id="myidshow1">
+				
+
+			</div><!--end of card-->
+	
+	</div>
+
+	<div data-role="popup" id="ShowmyBalance1" class="ui-content" style="max-width:250px">
+
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out" id="mybalanceshow1">
+				
+
+			</div><!--end of card-->
+
+	</div>
+
+	<div data-role="popup" id="ContactUs" class="ui-content" style="max-width:250px">
+
+	<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+	<!--<a href="#" data-rel="back" class="ncp-popup-close">X</a>-->
+	<a href="#" data-history="false" onclick="closepop('#ContactUs');" class="ncp-popup-close">X</a>
+		<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+			
+			<div class="ncp-popup-container">
+				 
+				 <div class="clear"></div>
+				<div class="ncp-popup-content roundinner spopup" align="center">
+				<br>
+				
+				<span id="contact_photo"></span>
+				
+                <h1 class="stitle1"><span id="contact_name"></span></h1>
+				
+				<span id="contact_validity"></span>
+				<br>
+					<p class="showid">
+				 
+						<div id="contact_details_id"></div>
+
+					</p>
+				</div>
+			</div>
+		</div>
+</div>
+	
+</div>
+
+		<div class="login">
+				<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_1"></span></h4>
+			 
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto2"></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2"></span></h1>
+				<span id="session_n_validity2"></span>
+            </div>
+   		 </div>
+    </div>
+     <div class="clear"></div>   
+						
+	 <div class="main">
+	 
+		<a href="#" onclick="showids();" data-rel="popup" class="btn"><img  src="images/showid.png" class="btn" width="350px" align="center"></a>		
+		
+        <a onclick="BookOne();" href="#"> <img  src="images/bookservice.png" class="btn" width="350px" align="center"></a>
+        <a onclick="ListTicket();" href="#"><img  src="images/show_service.png" class="btn" width="350px" align="center"></a>
+        <a href="#recharge"> <img  src="images/recharge_account.png" class="btn" width="350px" align="center"></a>
+        <a href="#" onclick="showbalance();" data-rel="popup" class="btn">  <img  src="images/show_balance.png" class="btn" width="350px" align="center"></a>
+         
+        <a onClick="TransTicket();" href="#"><img  src="images/service_history.png" class="btn" width="350px" align="center"></a>
+        <a onClick="TransHistory();" href="#"><img  src="images/transation_history.png" class="btn" width="350px" align="center"></a>
+		<a href="#settings"><img  src="images/settings.png" class="btn" width="350px" align="center"></a>
+        <a href="#ContactUs" data-rel="popup" class="btn"><img  src="images/contact.png" class="btn" width="350px" align="center"></a>
+
+			<br>
+			<div id="app-status-div">
+				<ul id="app-status-ul"></ul>
+			</div>
+			
+     </div>
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->
+
+	
+</div>	
+
+<div data-role="page" class="jqm-demos" id="forgotpasswd" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+   		 </div>
+    </div>
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		
+     	 	<div class="b2full">
+        		<h1 class="btitle">Forgot Password</h1>
+       		</div>
+       	   <div class="b3full"> 
+		   
+		   <form>
+			
+			<input type="tel" name="mobileforgot" id="mobileforgot" value="" placeholder="Enter Mobile No" data-role="none" >
+		
+			
+			<input value="Send OTP" class="right signin bookbtn2" data-role="none" id="forgbtn" type="submit">
+			
+			
+			</form>
+            </div>
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->		
+
+<script>
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID1' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyID 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID1' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyID 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID2' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyID 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID2' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyID 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance1' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyBalance 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance1' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyBalance 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance2' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyBalance 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance2' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyBalance 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ContactUs' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ContactUs 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ContactUs' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ContactUs 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyTicket' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyTicket 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyTicket' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyTicket 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+</script>	
+<script>
+
+$('#ShowmyID1').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyID2').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyBalance1').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyBalance2').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ContactUs').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyTicket').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+</script>
+		<!--minimumResultsForSearch: Infinity, theme: "classic"-->
+<script type="text/javascript">
+  $('select').select2(
+  {minimumResultsForSearch: Infinity});
+</script>			
+
+</body>
+</html>

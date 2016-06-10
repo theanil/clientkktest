@@ -1,0 +1,17 @@
+https://developers.google.com/mobile/add
+com.blu.webapp
+Server API
+AIzaSyDacfIyn2aT-HHSZA0qRiQVB21kcljVKgQ
+Sender ID help
+1076985314352
+
+-----------------------
+
+
+https://developers.google.com/mobile/add
+in.bluapps.webapp
+Server API Key 
+AIzaSyChujfwNfUOun-6DxOGeZAqrNAEI8ZB_8g
+Sender ID 
+606817764349
+

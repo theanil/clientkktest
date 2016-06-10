@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Blu App</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;  font-src https://fonts.gstatic.com https://fonts.gstatic.com; script-src 'self' http://happ.phpzeal.com 'unsafe-inline' 'unsafe-eval'; object-src 'self' http://happ.phpzeal.com; "/>
+
+<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+<script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
+			
+<script type="text/javascript" charset="utf-8" src="js/jquery-1.12.3.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.validate.min.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="js/select2.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/services.js"></script>
+
+<!-- Custom Theme files -->
+
+<link rel="stylesheet" href="css/select2.min.css" rel="stylesheet" type="text/css" media="all"/>
+
+<!--Google Fonts-->
+
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<!--Google Fonts-->
+
+<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.css" />
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" type="text/css" href="css/component.css" />
+<script type="text/javascript" charset="utf-8" src="js/modernizr.custom.js"></script>
+
+<link rel="stylesheet" href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<link rel="stylesheet" href="css/style2.css" rel="stylesheet" type="text/css" media="all"/>
+
+<style>
+select:required:invalid {
+color: #999;
+}
+option[value=””][disabled] {
+display: none;
+}
+option {
+color: #000;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+ 
+ document.addEventListener("deviceready", onDeviceReady, true);
+ //alert('ok');
+ //$.mobile.fixedToolbars.show(true);
+ 
+ function onDeviceReady() 
+ {
+	 var pushNotification;
+ 
+	  console.log("Entering index.html.onDeviceReady");
+	  //var element = document.getElementById('deviceProperties');
+	  var html = "";
+	  //html = html + "<li>" + 'Device Name: ' + device.name + "</li>";
+	  ////html = html + "<li>" + 'Device Cordova: ' + device.cordova + "</li>";
+	  ////html = html + "<li>" + 'Device phonegap: ' + device.phonegap + "</li>";
+	  //html = html + "<li>" + 'Device Platform: ' + device.platform + "</li>";
+	  //html = html + "<li>" + 'Device Version: ' + device.version + "</li>";
+	  html = html + "<li>" + 'Device ID: ' + device.uuid + "</li>";
+	  console.log(html);
+
+	//$("#app-status-ul").append('<li>deviceready event received</li>').listview("refresh");
+	//$("#app-status-ul2").append('<li>deviceready event received</li>').listview("refresh");
+
+		document.addEventListener("backbutton", function(e)
+		{
+			page = $.mobile.activePage[0].id;
+			//$("#app-status-ul").append('<li>backbutton event received</li>').listview("refresh");;
+			//$("#app-status-ul2").append('<li>backbutton event received</li>').listview("refresh");
+			//$("#app-status-ul2").append('<li>Page: ' + page + '</li>').listview("refresh");
+			//alert($.mobile.activePage.attr("id"));
+			//if( $("#main").length > 0)
+			
+			localStorage.setItem("device_platform", device.platform);
+			localStorage.setItem("device_uuid", device.uuid);
+			localStorage.setItem("device_browser", navigator.userAgent);
+		
+			if( page == 'beforelogin' || page == 'welcome')
+			{
+				// call this to get a new token each time. don't call it to reuse existing token.
+				
+				popupstatus = $("#openpopupid").val();
+				if(popupstatus == '1')
+				{
+					//alert('popup is opened");
+				}else
+				{
+					e.preventDefault();
+					navigator.app.exitApp();
+				}
+				//navigator.app.backHistory();
+			}
+			else
+			{
+				navigator.app.backHistory();
+			}
+		}, false);	
+
+		try 
+			{ 
+				pushNotification = window.plugins.pushNotification;
+				//$("#app-status-ul").append('<li>registering ' + device.platform + '</li>');
+				if (device.platform == 'android' || device.platform == 'Android' || device.platform == 'amazon-fireos' ) 
+				{
+					pushNotification.register(successHandler, errorHandler, {"senderID":"1076985314352","ecb":"onNotification"});		// required!
+				} else 
+				{
+					pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});	// required!
+				}
+			}
+			catch(err) 
+			{ 
+				txt="There was an error on this page.\n\n"; 
+				txt+="Error description: " + err.message + "\n\n"; 
+				alert(txt); 
+			} 		
+				
+
+
+		//var html = "";
+		//$("#deviceProperties").html(html);
+		//$("#deviceProperties").listview('refresh');
+
+		console.log("Exiting index.html.onDeviceReady");	
+
+		//alert(localStorage.session_id_local);
+		//ShowHome();
+ }	
+ 
+ 	 // handle APNS notifications for iOS
+	function onNotificationAPN(e) {
+		if (e.alert) {
+			 $("#app-status-ul").append('<li>push-notification: ' + e.alert + '</li>');
+			 // showing an alert also requires the org.apache.cordova.dialogs plugin
+			 navigator.notification.alert(e.alert);
+		}
+			
+		if (e.sound) {
+			// playing a sound also requires the org.apache.cordova.media plugin
+			var snd = new Media(e.sound);
+			snd.play();
+		}
+		
+		if (e.badge) {
+			pushNotification.setApplicationIconBadgeNumber(successHandler, e.badge);
+		}
+	}
+	
+	// handle GCM notifications for Android
+	function onNotification(e) {
+		//$("#app-status-ul").append('<li>EVENT: ' + e.event + '</li>');
+		
+		switch( e.event )
+		{
+			case 'registered':
+			if ( e.regid.length > 0 )
+			{
+				//$("#app-status-ul").append('<li>REGID: ' + e.regid + "</li>");
+				// Your GCM push server needs to know the regID before it can push to this device
+				// here is where you might want to send it the regID for later use.
+				
+				//alert(e.regid);
+				sendID(e.regid);
+				console.log("regID = " + e.regid);
+			}
+			break;
+			
+			case 'message':
+				// if this flag is set, this notification happened while we were in the foreground.
+				// you might want to play a sound to get the user's attention, throw up a dialog, etc.
+				if (e.foreground)
+				{
+					//$("#app-status-ul").append('<li>--INLINE NOTIFICATION--' + '</li>');
+					  
+					// on Android soundname is outside the payload. 
+					// On Amazon FireOS all custom attributes are contained within payload
+					var soundfile = e.soundname || e.payload.sound;
+					// if the notification contains a soundname, play it.
+					// playing a sound also requires the org.apache.cordova.media plugin
+					var my_media = new Media("/android_asset/www/"+ soundfile);
+
+					my_media.play();
+					//MyMessage();
+				}
+				else
+				{	// otherwise we were launched because the user touched a notification in the notification tray.
+					if (e.coldstart)
+					{
+						//$("#app-status-ul").append('<li>--COLDSTART NOTIFICATION--' + '</li>');
+						//MyMessage();
+					}
+					else
+					{
+						//$("#app-status-ul").append('<li>--BACKGROUND NOTIFICATION--' + '</li>');
+						//MyMessage();
+					}
+				}
+				
+				MyMessage();
+				//$("#app-status-ul").append('<li>' + e.payload.message + '</li>');
+				//android only
+				//$("#app-status-ul").append('<li>MESSAGE -> MSGCNT: ' + e.payload.msgcnt + '</li>');
+				//amazon-fireos only
+				//$("#app-status-ul").append('<li>MESSAGE -> TIMESTAMP: ' + e.payload.timeStamp + '</li>');
+			break;
+			
+			case 'error':
+				$("#app-status-ul").append('<li>ERROR -> MSG:' + e.msg + '</li>');
+			break;
+			
+			default:
+				$("#app-status-ul").append('<li>EVENT -> Unknown, an event was received and we do not know what it is</li>');
+			break;
+		}
+	}
+	
+	function tokenHandler (result) {
+		//$("#app-status-ul").append('<li>token: '+ result +'</li>');
+		// Your iOS push server needs to know the token before it can push to this device
+		// here is where you might want to send it the token for later use.
+	}
+	
+	function successHandler (result) 
+	{
+		//$("#app-status-ul").append('<li>success: '+ result +'</li>');
+	}
+	
+	function errorHandler (error) 
+	{
+		$("#app-status-ul").append('<li>error: '+ error +'</li>');
+	}			
+ 
+</script>
+
+	
+	<script>
+ 	
+	$(document).on('pageinit', '#index', function()
+	{
+		//alert('in home');
+		
+		ShowHome();
+		getAvailClub();
+		//GetBuildingWingInfo();
+	});	 
+	
+	$(document).on('pageinit', '#beforelogin', function()
+	{
+		//alert('in home');
+		
+		getAvailClub();
+		ShowHome();
+		//GetBuildingWingInfo();
+	});
+
+	//pageinit - pagebeforeshow
+	$(document).on('pageinit', '#welcome', function()
+	{
+		//alert('aa');
+		//GetBuildingWingInfo();
+		//ShowHome();
+		$("#club_name_1").html(localStorage.getItem('session_club_info'));
+		$("#club_name_2").html(localStorage.getItem('session_club_info'));
+		$("#club_name_3").html(localStorage.getItem('session_club_info'));
+		$("#club_name_4").html(localStorage.getItem('session_club_info'));
+		$("#club_name_5").html(localStorage.getItem('session_club_info'));
+		$("#club_name_6").html(localStorage.getItem('session_club_info'));
+		$("#club_name_7").html(localStorage.getItem('session_club_info'));
+		$("#club_name_8").html(localStorage.getItem('session_club_info'));
+		$("#club_name_9").html(localStorage.getItem('session_club_info'));
+		$("#club_name_10").html(localStorage.getItem('session_club_info'));
+		$("#club_name_11").html(localStorage.getItem('session_club_info'));
+		$("#club_name_12").html(localStorage.getItem('session_club_info'));
+		$("#club_name_13").html(localStorage.getItem('session_club_info'));
+		$("#club_name_14").html(localStorage.getItem('session_club_info'));
+		$("#club_name_15").html(localStorage.getItem('session_club_info'));
+		$("#contact_details_id").html(localStorage.getItem('session_contact_details_id'));
+		
+		if(localStorage.getItem('session_n_name') != null)
+		{
+			mem_photo = localStorage.getItem('session_n_memphoto');
+			validity = localStorage.getItem('session_n_validity');
+			name = urldecode(localStorage.getItem('session_n_name'));
+			var photo1 = validity1 = '';
+			if(mem_photo.length>0)
+			{
+				photo1 = '<img width="70" height="70" src="' + mem_photo + '" align="left">	';
+			}
+			if(validity.length>0)
+			{
+				validity1 = '<p>Valid upto : ' + validity +'</p>';
+			}	
+			//alert(name);
+			$("#session_n_name2").html(name);	
+			$("#session_n_validity2").html(validity);
+			$("#session_n_memphoto2").html(photo1);
+			$("#contact_photo").html(photo1);
+			$("#contact_name").html(name);
+			$("#contact_validity").html(validity);
+			$("#photo_contact").html(photo1);
+		}
+		//alert(localStorage.getItem('session_contact_details_id'));
+		
+		GetIDDetailsInfo();
+		//CheckBalance();		
+		//alert(dd + " * " + mm + " * " + yy);
+		//alert(localStorage.session_id_local);
+		//alert(localStorage.device_uuid);
+		//alert(localStorage.session_validity);
+	});
+	
+	$(document).on('pageinit', '#bookonetest', function()
+	{	
+		BookOne();
+	});
+</script>	
+	
+</head>
+
+<body>
+
+ <!-- <div data-role="page" class="jqm-demos" id="index" data-title="APP">
+
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+		
+		<div class="login">
+		<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+				Loading ... <br><br>
+				
+				<a href="#beforelogin">Logout</a>
+		</div>
+			
+	</div>
+</div> -->
+
+
+ <div data-role="page" class="jqm-demos" id="beforelogin" data-title="APP">
+
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+    	<!--<center><h1>Login</h1></center>
+
+		<form id="lform" class="ui-body ui-body-a ui-corner-all" data-ajax="false">
+
+			<fieldset data-role="fieldcontain"> 
+				<label for="username">Membership No:</label>
+				<input type="text" name="username" id="username" minlength="4" maxlength="20" required>
+			</fieldset>
+			
+			<input type="button" data-theme="b" name="submit" id="submit_login" value="Submit">
+
+		</form>
+		
+			<a href="# member.html" class="ui-btn" data-theme="b">Join Now</a>
+		-->
+		
+		<div class="login">
+			<h2>      <img src="images/logo.png" width="300" height="152"></h2>
+			<form>
+
+				
+			 <select name="club_select" id="club_select" class="selectbook" data-role="none">
+				<option value="" disabled selected>Select Club *</option>
+			</select>
+			
+				<input name="username2" id="username2" type="tel" class="user active" placeholder="Mobile No:" data-role="none"  />
+				<input name="password" id="password" type="password" class="lock active" placeholder="OTP No/Password:" data-role="none"  />			  
+
+			<div class="forgot">
+				<div class="login-para">
+				<br/>	
+				<p><a href="#forgotpasswd"> Forgot Password? </a></p>
+				 </div><br/>
+				<div class="clear"> </div>
+			</div>
+			<div class="login-bwn">
+			
+			<!--<a href="#welcome"><input type="submit" id="submit_login1" name="submit_login1" value="SIGN IN" class="right signin" data-role="none" /></a>-->
+
+			  <input type="submit" id="submit_login2" name="submit_login2" value="SIGN IN" class="right signin" data-role="none" />
+			   <!--<a href="#signup"><input type="submit" value="SIGN UP" class="left signup" data-role="none" /></a>-->
+			</div>
+			<div class="clear"> </div>
+			</form>
+		<div class="login-bottom">
+				<h3>Sign in via Social Media</h3>
+			  <p><img src="images/line.png" width="567" height="32"></p>
+			<div class="social-icons">
+			<div class="button">
+					<a class="tw" href="#"> 	<img src="images/facebook.png" width="60" height="60" >		</a>
+					<a class="fa" href="#"> <img src="images/twitter.png" width="60" height="60">	</a>
+				
+					
+<div class="clear"> </div>
+				</div>
+				
+				
+			</div>
+		  </div>
+		</div>
+			
+		</div>
+	  </div>
+
+
+ <div data-role="page" class="jqm-demos" id="welcome" data-title="APP">
+
+	
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div data-role="popup" id="ShowmyID1" class="ui-content" style="max-width:250px">
+
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out" id="myidshow1">
+				
+
+			</div><!--end of card-->
+			
+			<!--
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+								<a href="#" data-rel="back" class="ncp-popup-close">X</a>
+					<div class="ncp-popup-container validity">
+							<img width="50" height="50" src="images/premium.jpg" class="premium" align="right">
+						 <div class="clear"></div>
+						<div class="ncp-popup-content roundinner spopup" align="center">
+						<img width="150" height="150" src="images/anil.png" align="center">
+							<h1 class="stitle1">Anil Rai</h1>
+							<h5 class="h5">Valid upto : 30<sup>th</sup> April 2016</h5>
+
+
+							<p class="showid">
+							Sunil pandey <br/>
+			C402 ABC Towers Thane 401010 <br/>
+			Contact : 29828728787<br/>
+			Emergency : 1982787287287<br/>
+
+			<strong class="cardnumber">1112 1111 1233 1181</strong>
+
+			<br/>
+			<br/>
+
+							</p>
+						</div>
+					</div>
+			</div>
+			-->
+	
+	</div>
+
+	<div data-role="popup" id="ShowmyBalance1" class="ui-content" style="max-width:250px">
+
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out" id="mybalanceshow1">
+				
+
+			</div><!--end of card-->
+	<!--
+		<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+		<a href="#" data-rel="back" class="ncp-popup-close">X</a>
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+				<a href="#" class="ncp-popup-close">X</a>
+				<div class="ncp-popup-container">
+					 <img width="50" height="50" src="images/premium.jpg" class="premium" align="right">
+					 <div class="clear"></div>
+					<div class="ncp-popup-content roundinner spopup" align="center">
+					<img width="150" height="150" src="images/anil.png" align="center">
+						<h1 class="stitle1">Anil Rai</h1>
+						<h5 class="h5">Valid upto : 30<sup>th</sup> April 2016</h5>
+
+
+						<p class="showid">
+					 
+		Account Balance: INR 250.00<br/>
+		 
+		 Last Recharge Transaction <br/>
+		 
+		Date: 08-Apr-2016 3 p.m.<br/>
+		Amt: Rs 1000 <br/>
+			
+		 Last Service Transaction <br/>
+		 
+		Date: 08-Apr-2016 3 p.m.<br/>
+		
+		Service: Badminton <br>
+		Amt: Rs 10 <br/>
+		
+		<br/>
+		<br/>
+
+						</p>
+					</div>
+				</div>
+			</div>
+	</div>
+	-->
+	
+	</div>
+
+	<div data-role="popup" id="ContactUs" class="ui-content" style="max-width:250px">
+
+	<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+	<!--<a href="#" data-rel="back" class="ncp-popup-close">X</a>-->
+	<a href="#" data-history="false" onclick="closepop('#ContactUs');" class="ncp-popup-close">X</a>
+		<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+			
+			<div class="ncp-popup-container">
+				 
+				 <div class="clear"></div>
+				<div class="ncp-popup-content roundinner spopup" align="center">
+				<br>
+				
+				<span id="contact_photo"></span>
+				
+                <h1 class="stitle1"><span id="contact_name"></span></h1>
+				
+				<span id="contact_validity"></span>
+				<br>
+					<p class="showid">
+				 
+						<div id="contact_details_id"></div>
+
+					</p>
+				</div>
+			</div>
+		</div>
+</div>
+	
+</div>
+
+		<div class="login">
+				<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_1"></span></h4>
+			 
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto2"></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2"></span></h1>
+				<span id="session_n_validity2"></span>
+            </div>
+   		 </div>
+    </div>
+     <div class="clear"></div>   
+						
+	 <div class="main">
+	 
+		<a href="#" onclick="showids();" data-rel="popup" class="btn"><img  src="images/showid.png" class="btn" width="350px" align="center"></a>		
+		
+        <a onclick="BookOne();" href="#"> <img  src="images/bookservice.png" class="btn" width="350px" align="center"></a>
+        <a onclick="ListTicket();" href="#"><img  src="images/show_service.png" class="btn" width="350px" align="center"></a>
+        <a href="#recharge"> <img  src="images/recharge_account.png" class="btn" width="350px" align="center"></a>
+        <a href="#" onclick="showbalance();" data-rel="popup" class="btn">  <img  src="images/show_balance.png" class="btn" width="350px" align="center"></a>
+         
+        <a onClick="TransTicket();" href="#"><img  src="images/service_history.png" class="btn" width="350px" align="center"></a>
+        <a onClick="TransHistory();" href="#"><img  src="images/transation_history.png" class="btn" width="350px" align="center"></a>
+		<a href="#settings"><img  src="images/settings.png" class="btn" width="350px" align="center"></a>
+        <a href="#ContactUs" data-rel="popup" class="btn"><img  src="images/contact.png" class="btn" width="350px" align="center"></a>
+
+			<br>
+			<div id="app-status-div">
+				<ul id="app-status-ul"></ul>
+			</div>
+			
+     </div>
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->
+
+	
+</div>	
+
+
+<div data-role="page" class="jqm-demos" id="bookonetest" data-title="APP">
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+					<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_2"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>     
+     <div class="main">	 
+    	 
+		<div id="booklist">Loading .....</div>
+		
+		<!-- book1 -->
+
+	<br/><br/><br/><br/> <!-- book1 --> 
+	<!--<a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a>-->
+	<br>
+			 
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+			
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+		
+	</div><!-- /content -->
+	
+</div>	
+	
+	
+<div data-role="page" class="jqm-demos" id="bookone" data-title="APP">
+
+	
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+					<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_3"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+     <div class="clear"></div>     
+     <div class="main">	 
+    	 <div class="book1">
+     		<div class="b1"><img width="40" height="40" src="images/carrom.jpg" align="left"></div>
+			
+     	 	<div class="b2">
+        		<h1 class="btitle">Carrom</h1>
+      		  	<!--<h5 class="h5"><strong>Member:</strong> Rs 10 | <strong>Guest: </strong>Rs 50<br/>Timing: 10am to 6pm</h5>-->
+       		</div>
+			
+         	<div class="b3"> <a href="#booktwo"><input value="BOOK" class="right signin bookbtn" data-role="none" type="submit"></a></div>
+		</div>  <!-- book1 -->
+
+	<br/><br/><br/><br/> <!-- book1 --> <a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a>
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->
+	
+
+</div>	
+	
+<div data-role="page" class="jqm-demos" id="booktwotest" data-title="APP">
+
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_4"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		<div class="b1"><span id="service_logo"></span></div>
+     	 	<div class="b2m">
+        		<h1 class="btitle"><span id="service_name"></span></h1>
+      		  	<h5 class="h5"><strong>Member:</strong> Rs <span id="m_charge_lbl"></span> 
+						     | <strong>Guest: </strong>Rs <span id="g_charge_lbl"></span>
+							 <br/>Timing: <span id="timing1"></span></h5>
+       		</div>
+       	   <div class="b3full"> 
+		   <form class="member">
+		   
+			 <select name="cash_cardno2" id="cash_cardno2" class="selectbook" data-role="none">
+				
+			</select>
+			<!-- <option value="" disabled selected>Select Card *</option> -->
+			
+		<select name="no_of_member" id="no_of_member" class="selectbook" data-role="none" style="width: 100%;" onchange="m_change();">
+				<option value="0" disabled selected>Member/Card Holder</option>
+
+		</select>
+		
+		<select name="no_of_guest" id="no_of_guest" class="selectbook" data-role="none" style="width: 100%;" onchange="m_change();">
+				<option value="0" disabled selected>Guest</option>
+		</select>
+		
+		<div id="show_dod_no">
+			<select name="dod" id="dod" class="selectbook" data-role="none" style="width: 100%;" onchange="d_change();">
+					<option value="" disabled selected>Date</option>
+			</select>
+		</div>
+
+		<div id="show_court_no">
+			<select name="court_no" id="court_no" class="selectbook" data-role="none" style="width: 100%;" onchange="court_change();">
+					<option value="" disabled selected>Court</option>
+			</select>
+		</div>
+				
+		<div id="show_slot_no">
+			<select name="slot_no" id="slot_no" class="selectbook" data-role="none" style="width: 100%;">
+					<option value="" disabled selected>Timing</option>
+			</select>
+		</div>
+		
+		<div id="show_slot_no2" style="display:none;">
+			<select name="slot_no2" id="slot_no2" class="selectbook" data-role="none" style="width: 100%;">
+			</select>
+		</div>
+		
+		<input type="text" id="date_book" name="date_book" value="" style="display:none;">
+		<input type="text" id="service_id" name="service_id" value="" style="display:none;">
+		<input type="text" id="max_member" name="max_member" value="" style="display:none;">
+		<input type="text" id="booking_logic" name="booking_logic" value="" style="display:none;">
+		<input type="text" id="bookwithoutslot" name="bookwithoutslot" value="" style="display:none;">
+		<input type="text" id="tax_code" name="tax_code" value="" style="display:none;">
+		<input type="text" id="Tax_rate" name="Tax_rate" value="" style="display:none;">
+		<input type="text" id="m_charge" name="m_charge" value="" style="display:none;">
+		<input type="text" id="g_charge" name="g_charge" value="" style="display:none;">
+		<input type="text" id="selected_court" name="selected_court" value="" style="display:none;">
+		<input type="text" id="total_charge" name="total_charge" value="" style="display:none;">
+		
+		<input value="BOOK" class="right signin bookbtn2" data-role="none" id="book2btn" type="submit">
+		
+		<!--<a href="#bookthreetest" class="right signin bookbtn2" data-role="none" type="submit">Book</a>-->
+		
+		<!--<input value="BOOK" class="right signin bookbtn2" data-role="none" type="submit">-->
+			</form>
+            <!--<a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>-->
+			
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+		
+		<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+</div>	
+
+<div data-role="page" class="jqm-demos" id="bookthreetest" data-title="APP">
+
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_5"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>    
+     <div class="main">	 
+	 
+<div class="book1">
+     		<div class="b1"><span id="service_logo"></span></div>
+     	 	<div class="b2m">
+        		<h1 class="btitle"><span id="service_name"></span></h1>
+      		  	<h5 class="h5">
+				
+						<strong>Member:</strong> Rs <span id="m_charge_lbl2"></span>
+						     | <strong>Guest: </strong>Rs <span id="g_charge_lbl2"></span> <br>
+							 <strong>No of Member: </strong><span id="t_nomember_lbl"></span><br/>
+							 <strong>No of Guest: </strong><span id="t_noguest_lbl"></span><br/>
+							 
+							 <span id="id_court_timing_lbl"></span>
+							 
+							 <strong>Total charges: </strong>Rs <span id="t_charge_lbl2"></span><br/>
+							 <span id="others2"></span>
+							 
+							</h5>
+       		</div>
+       	   <div class="b3full"> 
+		   
+		   <form class="member">
+		   
+		
+		  <h1 class="btitle" style="text-align:center;">Terms & conditions</h1>
+		  <strong> <span id="service_name2"></span></strong> 
+		 <div style="text-align:left; padding:10px;     font-size: 15px;">   <br/>
+		 <span id="game_rule"></span>
+<!--
+<p>1. No member will be allowed to use swimming pool while the pool is under maintence /cleaning.</p><br/>
+<p>2. Members are not allowed to wear foot wears on the pool deck area.</p><br/>
+<p>3. All members are to wear proper swimming wear (only nylon/lycra) and members with long hair have to wear swimming pool cap and not the shower cap.</p><br/>
+<p>4. Non swimmer is to be accompanied with guardian only.</p><br/>
+<p>5. Person with skin disease/external injuries and females during menstrual cycle are not permitted to use swimming pool </p><br/>
+<p>6. No diving allowed.</p><br/>
+<p>7. Member must have proper shower before entering the pool.</p><br/>
+<p>8. The member not using swimming pool should sit in the sitting area only.</p><br/>
+<p>9. The timing for swimming pool is being notified separately </p><br/><br/>
+-->
+	</div>
+		 <span id="comments_2">
+		 
+		 </span>
+	</div>
+	
+			<input value="Confirm" class="right signin bookbtn2" id="bookfinalbtn" data-role="none" type="submit">
+			<input value="Cancel" class="right signin bookbtn2" id="bookfinalbtncan" data-role="none" type="button">
+			<!--<input value="BOOK" class="right signin bookbtn2" data-role="none" type="submit">-->
+			<!--<a href="#" class="right signin bookbtn2" data-role="none" type="submit">Confirm</a>-->
+			
+			<!--<a href="#" onclick="BookOne();" class="right signin bookbtn2" data-role="none" type="submit">Cancel</a>-->
+			</form>
+            
+			<!--<a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>-->
+			
+			<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+			
+		</div>  <!-- book1 -->
+
+          
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+</div>	
+
+<div data-role="page" class="jqm-demos" id="booktwo" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_6"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		<div class="b1"><img width="70" height="70" src="images/carrom.jpg" align="left"></div>
+     	 	<div class="b2m">
+        		<h1 class="btitle">Carrom</h1>
+      		  	<h5 class="h5"><strong>Member:</strong> Rs 10 | <strong>Guest: </strong>Rs 50<br/>Timing: 10am to 6pm</h5>
+       		</div>
+       	   <div class="b3full"> <form class="member">
+			 <select name="xtype_of_record1" id="xtype_of_record1" class="selectbook" data-role="none">
+			 <option value="" disabled selected>Member/Card Holder</option>
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+	</select>
+				 <select name="xtype_of_record2" id="xtype_of_record2" class="selectbook" placeholder="Guest" data-role="none">
+				<option value="" disabled selected>Guest</option>
+
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+	</select>
+     <select name="xtype_of_record3" id="xtype_of_record3" class="selectbook" placeholder="Court" data-role="none">
+	 			 <option value="" disabled selected>Court</option>
+
+		<option value="O">Court 1</option>
+		<option value="T">Court 2</option>
+	</select>
+     <select name="xtype_of_record4" id="xtype_of_record4" class="selectbook" placeholder="Timing" data-role="none">
+	 			 <option value="" disabled selected>Timing</option>
+
+		<option value="O">10:30 AM</option>
+		<option value="T">12:30 PM</option>
+	</select>
+	<input type="checkbox" id="agreesport"> I agree to <a href="#TicketTerms" data-rel="popup">Terms & Conditions</a><br>
+			<input value="BOOK" class="right signin bookbtn2" data-role="none" type="submit"></form>
+            <a href="#bookone">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+      <div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+       
+         
+        <div id="dl-menu" class="dl-menuwrapper">
+						<button class="dl-trigger">Open Menu</button>
+						<ul class="dl-menu">
+							<li><a href="#ShowmyID" data-rel="popup" class="btn ui-link" aria-haspopup="true" aria-owns="ShowmyID" aria-expanded="false">Show ID</a></li>
+							<li><a href="#bookone">Book A service</a></li>
+                            <li><a href="#show_service_ticket">show service tickets</a></li>
+                            <li><a href="#recharge">Recharge account</a></li>
+							<li><a href="#ShowmyBalance" data-rel="popup" class="btn ui-link" aria-haspopup="true" aria-owns="ShowmyID" aria-expanded="false">Show balance</a></li>
+                            <li><a href="#service_history">Service history</a></li>
+                             <li><a href="#transaction_history">transaction history</a></li>
+							<li><a href="#">settings</a></li>
+							
+
+                            <li><a href="#ContactUs">Contact us</a></li>
+							
+						</ul>
+					</div> <h1>App</h1><!-- /dl-menuwrapper --><!-- /container -->
+	
+    </div><!-- /header -->
+	
+  	<div data-role="footer" data-position="fixed" data-theme="a">
+		<div data-role="navbar" id="lbar">
+			<ul>
+				<li><a href="#search" data-prefetch="true" class="ui-btn ui-shadow ui-corner-all">Search</a></li>
+				<li><a href="#" OnClick="Login(); return false;" data-transition="slide" class="ui-btn ui-shadow ui-corner-all">Login</a></li>
+				<li><a href="#freetrial" data-prefetch="true" class="ui-btn ui-shadow ui-corner-all ui-btn-active">Free Trial</a></li>
+				<li><a href="#subscribe" data-prefetch="true" class="ui-btn ui-shadow ui-corner-all">Subscribe</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->	
+
+</div>	
+
+
+
+<div data-role="page" class="jqm-demos" id="show_service_ticket" data-title="APP">
+
+	<div data-role="popup" id="ShowmyTicket" class="ui-content" style="max-width:250px">
+
+					<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+					<!--<a href="#" data-rel="back" class="ncp-popup-close">X</a>-->
+					<a href="#" data-history="false" onclick="closepop('#ShowmyTicket');" class="ncp-popup-close">X</a>
+					<div class="ncp-popup-container">
+						 <!--<img width="50" height="50" src="images/premium.jpg" class="premium" align="right">-->
+						 <br>
+						 <div class="clear"></div>
+						<div class="ncp-popup-content roundinner spopup" align="center">
+						
+						<span id="visitor_info1"></span>
+
+						</div>
+							<p class="showid">
+											
+								  <span id="lastticketid">
+								  <img width="70" height="70" src="images/code.jpg" align="center"><br>	
+									Booking Date: 31-03-2016 09:57am<br>
+									Ticket Type: Member<br>
+									Service Date: 31-03-2016<br>
+									Timing: 09:30AM to 10:30 AM<br>
+									</span>
+							</p>
+						
+					</div>
+				</div>
+</div>
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_7"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_2"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>   
+     <div class="main">	 <h1 class="white">My Live Tickets</h1>
+
+	 <div id="liveticket1">
+         <div class="book1">
+     		
+     	 	<div class="b2full">
+      		  	<a href="#ShowmyTicket" data-rel="popup"><h5 class="h5"><strong>Service:</strong> Billiads<br>
+                  <strong>Ticket ID:</strong> T177171s616161<br>
+                  <strong>Booking Date:</strong> 31-03-2016 09:57am<br>
+                  <strong>Ticket Type</strong>: Member<br>
+                  <!--<strong>Service Date</strong>: 31-03-2016<br>
+                  <strong>Timing:</strong> 09:30AM to 10:30 AM<br>-->
+
+				</h5>
+				</a>
+       		</div>
+        
+		</div>  <!-- book1 -->
+
+	</div>
+		
+		<!--<a href="#" data-rel="back">Back</a> |<a href="#">Services</a>-->
+		
+		<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>		
+
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+
+</div>	
+	
+	
+<div data-role="page" class="jqm-demos" id="service_history" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_8"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_3"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>    
+     <div class="main">	 <h1 class="white">Service History</h1>
+
+	 <div id="history1">
+		<div class="book1 validitys">
+     		
+     	 	<div class="b2full">
+        	
+      		  	<h5 class="h5"><strong>Service:</strong> Billiads<br>
+                  <strong>Booking Date:</strong> 31-03-2016 09:57am<br>
+                  <strong>Service Date</strong>: 31-03-2016<br>
+                  <strong>Ticket Type</strong>: Member<br>
+                  <strong>Timing:</strong> 09:30AM to 10:30 AM<br>
+
+</h5>
+       		</div>
+        
+		</div>  <!-- book1 -->
+		
+
+		</div>
+		
+		<!--<a href="#" data-rel="back">Back</a> |<a href="#">Services</a>-->
+
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>		
+
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+
+	
+		
+	</div><!-- /content -->
+
+</div>	
+
+<div data-role="page" class="jqm-demos" id="transaction_history" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_8"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_4"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>    
+     <div class="main">	 <h1 class="white">Transaction History</h1>
+	 
+	 <div id="history2">
+		<!--
+		
+    	 <div class="book1">
+     		
+     	 	<div class="b2full">
+        	
+      		  	<h5 class="h5"><strong>Service:</strong> Recharge<br>
+                  <strong>Amount:</strong> Rs 500<br>
+                  <strong>Date:</strong> 31-03-2016 09:57am<br>
+
+				</h5>
+       		</div>
+        
+		</div> 
+         <div class="book1">
+     		
+     	 	<div class="b2full">
+        	
+      		  	<h5 class="h5"><strong>Service:</strong> Badminton<br>
+                  <strong>Amount:</strong> Rs 10<br>
+                  <strong>Date:</strong> 06-04-2016 09:57am<br>
+
+				</h5>
+       		</div>
+        
+		</div>  
+			-->
+			<!-- book1 -->
+		
+	</div>
+         <!-- book1 --> 
+		 
+		 <!--<a href="#" data-rel="back">Back</a> |<a href="#">Services</a>-->
+		 
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>		 
+
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->
+
+<div data-role="page" class="jqm-demos" id="messages" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_8"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	
+     <div class="clear"></div>    
+     <div class="main">	 <h1 class="white">My Messages</h1>
+	 
+	 <div id="message">
+		
+			<!-- book1 -->
+		
+	</div>
+         <!-- book1 --> 
+		 
+		 <!--<a href="#" data-rel="back">Back</a> |<a href="#">Services</a>-->
+		 
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>		 
+
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->	
+	
+<div data-role="page" class="jqm-demos" id="recharge" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+				<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_9"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_5"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+	
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		
+
+       	   <div class="b3full"> <form style="display: -moz-groupbox;">
+
+			
+			<a href="#rechargecash"  class="right signin bookbtn2">Cash</a>
+			<a href="#" class="right signin bookbtn2">Pay by Wallet</a> <!-- rechargewallet-->
+			<a href="#" class="right signin bookbtn2">Net Banking</a> 
+			<a href="#" class="right signin bookbtn2">Credit Card</a>
+			<!--
+			<input href="#rechargecash" value="Cash" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Pay by Wallet" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Net Banking" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Credit Card" class="right signin bookbtn2" data-role="none" type="submit">
+			-->
+			
+			</form>
+            <div class="clear"></div>    
+			<!--<a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>-->
+			
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+		
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+			
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->
+
+<div data-role="page" class="jqm-demos" id="rechargecash" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_10"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_6"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		
+     	 	<div class="b2full">
+        		<h1 class="btitle">Cash Payment</h1>
+      		  	<h5 class="h5">Please deposit Cash at counter</h5>
+       		</div>
+       	   <div class="b3full"> 
+		   
+		   <form>
+			
+			 <select name="cash_cardno" id="cash_cardno" class="selectbook" data-role="none">
+				<option value="" disabled selected>Select Card *</option>
+			</select>
+			
+			<select name="cash_amt" id="cash_amt" class="selectbook" data-role="none">
+				<option value="" disabled selected>Amount *</option>
+				<option value="100">100</option>
+				<option value="250">250</option>
+				<option value="500">500</option>
+			</select>
+
+			<input value="Recharge" class="right signin bookbtn2" data-role="none" id="submitcash" type="submit">
+			
+			
+			</form>
+            <!--<a href="#bookone">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>-->
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+		
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+		
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->	
+	
+<div data-role="page" class="jqm-demos" id="rechargewallet" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+				<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_11"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+            	<img width="70" height="70" src="images/anil.png" align="left">
+                <h1 class="stitle">Anil Rai</h1>
+				<p>Valid upto : 30<sup>th</sup> April 2016</p>
+            </div>
+   		 </div>
+    </div>
+     <div class="clear"></div>      
+     <div class="main">	 
+    	  <div class="book1">
+     		
+
+       	   <div class="b3full"> <form style="display: -moz-groupbox;">
+
+			
+			<a href="#"  class="right signin bookbtn2">Pay by Patym</a> 
+			<a href="#" class="right signin bookbtn2">Pay by Oxigen</a>
+			<a href="#" class="right signin bookbtn2">Pay by ITZ Cash card</a>
+			<!--
+			<input href="#rechargecash" value="Cash" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Pay by Wallet" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Net Banking" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Credit Card" class="right signin bookbtn2" data-role="none" type="submit">
+			-->
+			
+			</form>
+            <div class="clear"></div>     <a href="#bookone">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->	
+	
+<div data-role="page" class="jqm-demos" id="settings" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+				<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_12"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_7"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>      
+     <div class="main">	 
+    	  <div class="book1">
+     		
+
+       	   <div class="b3full"> <form style="display: -moz-groupbox;">
+
+			
+			<a href="#" onclick="MyMessage();"  class="right signin bookbtn2">Messages</a> 
+			<a href="#changepassword"  class="right signin bookbtn2">Change Password</a> 
+			<a href="#" onclick="LogOut();" class="right signin bookbtn2">Logout</a>
+			<!--
+			<input href="#rechargecash" value="Cash" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Pay by Wallet" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Net Banking" class="right signin bookbtn2" data-role="none" type="submit">
+			<input value="Credit Card" class="right signin bookbtn2" data-role="none" type="submit">
+			-->
+			
+			</form>
+            <div class="clear"></div>     
+			<!--<a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>-->
+						
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+		
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+
+			
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+</div><!-- /content -->	
+
+
+<div data-role="page" class="jqm-demos" id="changepassword" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_13"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name2_8"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		
+     	 	<div class="b2full">
+        		<h1 class="btitle">Change Password</h1>
+       		</div>
+       	   <div class="b3full"> 
+		   
+		   <form>
+			
+			<input type="password" name="pass1" id="pass1" value="" placeholder="New Password" data-role="none" >
+			<input type="password" name="pass2" id="pass2" value="" placeholder="Confirm New Password" data-role="none" >
+			
+			
+			<input value="Change Password" class="right signin bookbtn2" data-role="none" id="passbtn" type="submit">
+			
+			
+			</form>
+            <!--<a href="#" data-rel="back">Back</a> |<a href="#" onclick="BookOne();">Services</a></div>-->
+			
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+		
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+			
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->	
+	
+<div data-role="page" class="jqm-demos" id="forgotpasswd" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<div class="header">
+   		 <div class="service roundinner">
+   		 </div>
+    </div>
+     <div class="clear"></div>    
+     <div class="main">	 
+    	 <div class="book1">
+     		
+     	 	<div class="b2full">
+        		<h1 class="btitle">Forgot Password</h1>
+       		</div>
+       	   <div class="b3full"> 
+		   
+		   <form>
+			
+			<input type="tel" name="mobileforgot" id="mobileforgot" value="" placeholder="Enter Mobile No" data-role="none" >
+		
+			
+			<input value="Send OTP" class="right signin bookbtn2" data-role="none" id="forgbtn" type="submit">
+			
+			
+			</form>
+            </div>
+		</div>  <!-- book1 -->
+         
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+	
+		
+	</div><!-- /content -->		
+	
+<div data-role="page" id="signup" data-title="Blu">
+
+
+		<div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+		<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+	<form>
+	
+	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+			<input type="radio" name="type_of_record" id="type_of_record-a" value="O" checked="checked"  onChange="ChangeRecord();">
+			<label for="type_of_record-a">Owner</label>
+			<input type="radio" name="type_of_record" id="type_of_record-b" value="T"  onChange="ChangeRecord();">
+			<label for="type_of_record-b">Tenant</label>
+			
+	</fieldset>
+	
+	<p style="color: white">Owner Details <p>
+	<select name="property_id" id="property_id"  onchange="BldChange();" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Building *</option>	
+	</select>
+
+	<select name="wing_name" id="wing_name" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Wing *</option>
+	</select>
+	
+      <input type="number" name="flat_no" id="flat_no" value="" placeholder="Flat No *" data-role="none1">
+	  
+	<select name="flat_type" id="flat_type" data-role="none" style="width: 100%;">
+	<option value="" disabled selected>Select Flat Type *</option>
+		<option value="1">1BHK</option>
+		<!--<option value="1.5">1.5BHK</option>-->
+		<option value="2">2BHK</option>
+		<!--<option value="2.5">2.5BHK</option>-->
+		<option value="3">3BHK</option>
+		<option value="4">4BHK</option>
+		<option value="5">5BHK</option>
+		<option value="6">6BHK</option>
+		<!--<option value="7">7BHK</option>
+		<option value="8">8BHK</option>-->
+	</select>
+	<input type="text" name="owner_names" id="owner_names" value="" placeholder="Name of Owner *" data-role="none1">
+	<textarea name="co_owner_names"  id="co_owner_names" placeholder="  Name of Co-Owners" data-role="none1" ></textarea>
+	<input type="tel" name="tel" id="tel" value="" placeholder="Tel No" data-role="none1">
+	<input type="tel" name="mobile" id="mobile" value="" placeholder="Mobile No" data-role="none1">
+	
+		<select name="purchase_source" id="purchase_source" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>From Whom Purchased the Flat</option>
+		<option value="Directly">Directly</option>
+		<option value="Resale">Resale</option>
+
+		</select>
+		
+	<textarea name="communication_address"  id="communication_address" placeholder="  Communication Address" data-role="none1" ></textarea>
+
+	<p style="color: white" id="leaseinfo" style="display:none;">To be filled in case of Leave & Licensee/Tenant <p>
+	
+	<input type="text" name="licensee_name" id="licensee_name" value="" placeholder="Name of Licensee *" style="display:none;">
+	<input type="date" name="lease_from" id="lease_from" value="" placeholder="Period of Lease:  From *" style="display:none;">
+	<input type="date" name="lease_to" id="lease_to" value="" placeholder="To *" style="display:none;">
+	
+	<p style="color: white" id="corpinfo">In case of Company Lease, Please Provide following information <p>
+	
+	<input type="text" name="c_company_name" id="c_company_name" value="" placeholder="Name of Company" style="display:none;">
+	<textarea name="c_address" id="c_address"  placeholder="  Address" style="display:none;"></textarea>	
+	<input type="tel" name="c_tel" id="c_tel" value="" placeholder="Contact No" style="display:none;">
+	<input type="tel" name="c_fax" id="c_fax" value="" placeholder="Fax No" style="display:none;">
+	<input type="text" name="c_contact_person" id="c_contact_person" value="" placeholder="Contact Person" style="display:none;">
+	<input type="tel" name="c_contact_tel" id="c_contact_tel" value="" placeholder="Contact No of Above Person (O)" style="display:none;">
+	<input type="tel" name="c_contact_mobile" id="c_contact_mobile" value="" placeholder="(M)" style="display:none;">
+	<input type="email" name="c_email_id" id="c_email_id" value="" placeholder="E-mail ID" style="display:none;">
+	
+	<p style="color: white">To be filled by each member to whom Smart cards are to be issued (ONLY AS PER ELIGIBILITY) <p>
+	<input type="text" name="f_name" id="f_name" value="" placeholder="Name of Member *" data-role="none1">
+	<input type="file" name="mem_photo" id="mem_photo" value="" placeholder="Upload Photo" data-role="none1">
+	
+	<input type="text" name="relation_with_owner" id="relation_with_owner" value="" placeholder="Relationship with Owner" data-role="none1">
+	
+		<select name="gender"  id="gender" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Gender *</option>
+		<option value="M">Male</option>
+		<option value="F">Female</option>
+		</select>
+
+		<select name="marital_status" id="marital_status" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Marital Status *</option>
+		<option value="N">N/A</option>
+		<option value="M">Married</option>
+		<option value="S">Single</option>
+		<option value="D">Divorced</option>
+		</select>
+	<input type="date" name="date_of_birth" id="date_of_birth" value="" placeholder="Date of Birth" data-role="none1">
+	
+	<input type="date" name="wedding_anniversary" id="wedding_anniversary" value="" placeholder="Wedding Anniversary" data-role="none1">
+	
+	<input type="tel" name="tel_member" id="tel_member" value="" placeholder="Tel No:" data-role="none1">
+	<input type="tel" name="mobile_member" id="mobile_member" value="" placeholder="Mobile No *" data-role="none1">
+	<input type="text" name="emergency_contact_person" id="emergency_contact_person" value="" placeholder="Contact Person on Emergency" data-role="none1">
+	<input type="tel" name="emergency_contact_no" id="emergency_contact_no" value="" placeholder="Contact No on Emergency" data-role="none1">
+	
+		<select name="blood_group" id="blood_group" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Blood Group</option>
+		<option value="A+">A+</option>
+		<option value="A-">A-</option>
+		<option value="B+">B+</option>
+		<option value="B-">B-</option>
+		<option value="AB+">AB+</option>
+		<option value="AB-">AB-</option>
+		<option value="O+">O+</option>
+		<option value="O-">O-</option>
+		</select>
+		
+	<input type="text" name="alergic_to" id="alergic_to" value="" placeholder="Alergic to(if any)" data-role="none1">
+	<input type="text" name="profession" id="profession" value="" placeholder="Profession" data-role="none1">
+	<input type="text" name="organisation_name" id="organisation_name" value="" placeholder="Organisation Name" data-role="none1">
+	<textarea name="add1"  id="add1" placeholder="  Address " data-role="none1" ></textarea>	
+	
+	<input type="email" name="email" id="email" value="" placeholder="E-mail Address" data-role="none1">
+	<input type="tel" name="tel_office" id="tel_office" value="" placeholder="Tel (O)" data-role="none1">
+	
+	</form>		
+		
+		<div class="clear"> </div>
+		<div class="agree">
+			
+				<p><label class="checkbox"><input type="checkbox" name="iagrree" id="iagrree"><i> </i> I agree Terms and conditions</label></p>
+			<br/>
+			<div class="clear"> </div>
+		</div>
+		<div class="login-bwn">
+		   <input type="submit" id="signup_submit" name="signup_submit" value="SIGN UP" class="signupfull" data-role="none"/>
+		</div>
+		<div class="clear"> </div>
+
+			<div class="register">Already a Member? <a href="#" onclick="ShowHome();">Login</a></div>
+			
+		</div><br><br/>
+		
+	  </div>
+	</div>
+		
+
+
+<div data-role="page" id="signup2" data-title="Blu">
+
+
+		<div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+		<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+	<form>
+		<input type="hidden" name="type_of_record1" id="type_of_record1" value="" data-role="none1">	
+		<input type="hidden" name="member_flat_id1" id="member_flat_id1" value="" data-role="none1">	
+	</form>		
+		
+		<div class="clear"> </div>
+
+		<div class="login-bwn">
+		   <a href="#signup_member" class="right signin bookbtn2">Add more member</a>
+		   <a href="#beforelogin" class="right signin bookbtn2">Done .. </a>
+		   
+
+		</div>
+		<div class="clear"> </div>
+
+			<div class="register">Already a Member? <a href="#" onclick="ShowHome();">Login</a></div>
+			
+		</div><br><br/>
+		
+	  </div>
+</div>
+		
+
+	
+<div data-role="page" id="signup_member" data-title="Blu">
+
+
+		<div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+		<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+
+	<form>
+	
+	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+			<input type="radio" name="type_of_record2" id="type_of_record-c" value="O" checked="checked">
+			<label for="type_of_record-c">Owner / Tenant</label>
+			<input type="radio" name="type_of_record2" id="type_of_record-d" value="D">
+			<label for="type_of_record-d">Dependent</label>
+			
+	</fieldset>
+
+	
+	<p style="color: white">To be filled by each member to whom Smart cards are to be issued (ONLY AS PER ELIGIBILITY) <p>
+	<input type="hidden" name="member_flat_id" id="member_flat_id" value="" data-role="none1">
+	<input type="hidden" name="type_of_record2" id="type_of_record2" value="" data-role="none1">	
+
+	<input type="text" name="f_name2" id="f_name2" value="" placeholder="Name of Member *" data-role="none1">
+	<input type="file" name="mem_photo2" id="mem_photo2" value="" placeholder="Upload Photo" data-role="none1">
+	
+	<input type="text" name="relation_with_owner2" id="relation_with_owner2" value="" placeholder="Relationship with Owner" data-role="none1">
+	
+		<select name="gender2"  id="gender2" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Gender *</option>
+		<option value="M">Male</option>
+		<option value="F">Female</option>
+		</select>
+
+		<select name="marital_status2" id="marital_status2" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Marital Status *</option>
+		<option value="N">N/A</option>
+		<option value="M">Married</option>
+		<option value="S">Single</option>
+		<option value="D">Divorced</option>
+		</select>
+	<input type="date" name="date_of_birth2" id="date_of_birth2" value="" placeholder="Date of Birth" data-role="none1">
+	
+	<input type="date" name="wedding_anniversary2" id="wedding_anniversary2" value="" placeholder="Wedding Anniversary" data-role="none1">
+	
+	<input type="tel" name="tel_member2" id="tel_member2" value="" placeholder="Tel No:" data-role="none1">
+	<input type="tel" name="mobile_member2" id="mobile_member2" value="" placeholder="Mobile No *" data-role="none1">
+	<input type="text" name="emergency_contact_person2" id="emergency_contact_person2" value="" placeholder="Contact Person on Emergency" data-role="none1">
+	<input type="tel" name="emergency_contact_no2" id="emergency_contact_no2" value="" placeholder="Contact No on Emergency" data-role="none1">
+	
+		<select name="blood_group2" id="blood_group2" data-role="none" style="width: 100%;">
+		<option value="" disabled selected>Select Blood Group</option>
+		<option value="A+">A+</option>
+		<option value="A-">A-</option>
+		<option value="B+">B+</option>
+		<option value="B-">B-</option>
+		<option value="AB+">AB+</option>
+		<option value="AB-">AB-</option>
+		<option value="O+">O+</option>
+		<option value="O-">O-</option>
+		</select>
+		
+	<input type="text" name="alergic_to2" id="alergic_to2" value="" placeholder="Alergic to(if any)" data-role="none1">
+	<input type="text" name="profession2" id="profession2" value="" placeholder="Profession" data-role="none1">
+	<input type="text" name="organisation_name2" id="organisation_name2" value="" placeholder="Organisation Name" data-role="none1">
+	<textarea name="add12"  id="add12" placeholder="  Address " data-role="none1" ></textarea>	
+	
+	<input type="email" name="email2" id="email2" value="" placeholder="E-mail Address" data-role="none1">
+	<input type="tel" name="tel_office2" id="tel_office2" value="" placeholder="Tel (O)" data-role="none1">
+	
+	</form>		
+		
+		<div class="clear"> </div>
+
+		<div class="login-bwn">
+		   <input type="submit" id="signup_submit2" name="signup_submit2" value="SIGN UP" class="signupfull" data-role="none"/>
+		</div>
+		<div class="clear"> </div>
+
+			<div class="register">Already a Member? <a href="#" onclick="ShowHome();">Login</a></div>
+			
+		</div><br><br/>
+		
+	  </div>
+	</div>
+		
+
+	
+<div data-role="page" class="jqm-demos" id="login" data-title="APP">
+
+     <div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+       
+         
+         <div id="dl-menu" class="dl-menuwrapper">
+						<button class="dl-trigger">Open Menu</button>
+						<ul class="dl-menu">
+							<li><a href="#ShowmyID" data-rel="popup" class="btn ui-link" aria-haspopup="true" aria-owns="ShowmyID" aria-expanded="false">Show ID</a></li>
+							<li><a href="#bookone">Book A service</a></li>
+                            <li><a href="#show_service_ticket">show service tickets</a></li>
+                            <li><a href="#recharge">Recharge account</a></li>
+							<li><a href="#ShowmyBalance" data-rel="popup" class="btn ui-link" aria-haspopup="true" aria-owns="ShowmyID" aria-expanded="false">Show balance</a></li>
+                            <li><a href="#service_history">Service history</a></li>
+                             <li><a href="#transaction_history">transaction history</a></li>
+							<li><a href="#">settings</a></li>
+                            <li><a href="#ContactUs">Contact us</a></li>
+							
+						</ul>
+					</div> <h1>App</h1><!-- /dl-menuwrapper --><!-- /container -->
+		
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+    	<center><h1>Login</h1></center>
+
+		<form id="lform" class="ui-body ui-body-a ui-corner-all" data-ajax="false">
+
+			<fieldset data-role="fieldcontain"> 
+				<label for="username">Membership No:</label>
+				<input type="text" name="username" id="username2" minlength="4" maxlength="20" required>
+			</fieldset>
+
+			<fieldset data-role="fieldcontain" style="display:none1;" id="pin_id"> 
+				<label for="password">OTP No:</label>
+				<input type="number" name="password" id="password" minlength="4" maxlength="5" required>
+			</fieldset>
+			
+			<input type="button" data-theme="b" name="submit" id="submit_login2" value="Submit">
+
+		</form>
+		
+	</div><!-- /content -->
+</div>	
+		
+ <div data-role="page" class="jqm-demos" id="beforelogin2" data-title="APP">
+
+     <div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+      
+         
+         <div id="dl-menu" class="dl-menuwrapper">
+						<button class="dl-trigger">Open Menu</button>
+						<ul class="dl-menu">
+							<li><a href="#ShowmyID" data-rel="popup" class="btn ui-link" aria-haspopup="true" aria-owns="ShowmyID" aria-expanded="false">Show ID</a></li>
+							<li><a href="#bookone">Book A service</a></li>
+                            <li><a href="#show_service_ticket">show service tickets</a></li>
+                            <li><a href="#recharge">Recharge account</a></li>
+							<li><a href="#ShowmyBalance" data-rel="popup" class="btn ui-link" aria-haspopup="true" aria-owns="ShowmyID" aria-expanded="false">Show balance</a></li>
+                            <li><a href="#service_history">Service history</a></li>
+                             <li><a href="#transaction_history">transaction history</a></li>
+							<li><a href="#">settings</a></li>
+                            <li><a href="#ContactUs">Contact us</a></li>
+							
+						</ul>
+					</div>  <h1>App</h1><!-- /dl-menuwrapper --><!-- /container -->
+		
+    </div><!-- /header -->
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+    	<center><h1>Login</h1></center>
+
+		<form id="lform" class="ui-body ui-body-a ui-corner-all" data-ajax="false">
+
+			<fieldset data-role="fieldcontain"> 
+				<label for="username">Username:</label>
+				<input type="text" name="username" id="username" minlength="4">
+			</fieldset>
+
+			<fieldset data-role="fieldcontain"> 
+				<label for="password">Password:</label>
+				<input type="password" name="password" id="password" class="required" minlength="4">
+			</fieldset>
+
+			<input type="button" data-theme="b" name="submit" id="submit_login" value="Submit">
+
+		</form>
+		
+	</div><!-- /content -->
+
+ </div>
+ 
+ 
+ <div data-role="page" class="jqm-demos" id="formvariable" data-title="APP">
+
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		
+		<div class="login">
+
+			<form>
+
+			
+		<select name="data_building_name"  id="data_building_name" data-role="none" style="display: none1;">
+			<option value="" disabled selected>Select Building *</option>
+		</select>
+		
+		<select name="data_wings"  id="data_wings" data-role="none" style="display: none1;">
+			<option value="" disabled selected>Select Wing *</option>
+		</select>
+				
+		<select name="data_wings2"  id="data_wings2" data-role="none" style="display: none1;">
+			<option value="" disabled selected>Select Wing *</option>
+		</select>
+		
+		<select name="data_idcard"  id="data_idcard" data-role="none" style="display: none1;">
+		</select>
+		
+		<select name="data_services"  id="data_services" data-role="none" style="display: none1;">
+		</select>
+		
+		<input name="data_owner_names" id="data_owner_names" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_co_owner_names" id="data_co_owner_names" type="text" value='' data-role="none" style="display: none1;" />
+		
+		<input name="club_name" id="club_name" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_club_logo" id="data_club_logo" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_add1" id="data_add1" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_add2" id="data_add2" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_city" id="data_city" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_pincode" id="data_pincode" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_tel" id="data_tel" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_fax" id="data_fax" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_email" id="data_email" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_website" id="data_website" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_weeklyoff" id="data_weeklyoff" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="data_timing" id="data_timing" type="text" value='' data-role="none" style="display: none1;" />
+		
+		<input name="mu_id" id="mu_id" type="text" value='' data-role="none" style="display: none1;" />
+		<input name="openpopupid" id="openpopupid" type="text" value='' data-role="none" style="display: none1;" />
+					
+		  
+
+			<div class="clear"> </div>
+			</form>
+
+		</div>
+			
+		</div>
+	  </div>
+	
+
+ 
+	<div data-role="page" class="jqm-demos" id="showmultiplemembers" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div data-role="popup" id="ShowmyID2" class="ui-content" style="max-width:250px">
+
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out" id="myidshow2">
+				Loading ...
+
+			</div><!--end of card-->
+			
+			<!--
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+								<a href="#" data-rel="back" class="ncp-popup-close">X</a>
+					<div class="ncp-popup-container validity">
+							<img width="50" height="50" src="images/premium.jpg" class="premium" align="right">
+						 <div class="clear"></div>
+						<div class="ncp-popup-content roundinner spopup" align="center">
+						<img width="150" height="150" src="images/anil.png" align="center">
+							<h1 class="stitle1">Anil Rai</h1>
+							<h5 class="h5">Valid upto : 30<sup>th</sup> April 2016</h5>
+
+
+							<p class="showid">
+							Sunil pandey <br/>
+			C402 ABC Towers Thane 401010 <br/>
+			Contact : 29828728787<br/>
+			Emergency : 1982787287287<br/>
+
+			<strong class="cardnumber">1112 1111 1233 1181</strong>
+
+			<br/>
+			<br/>
+
+							</p>
+						</div>
+					</div>
+			</div>
+			-->
+	
+	</div>
+	
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_14"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>   
+     <div class="main">	 
+	 <h1 class="white">Members List</h1>
+
+	 <div id="memcarddata1">
+	
+        <!--
+		<div class="book1">
+     	 	<div class="b2full">
+      		  	<a href="#"><h5 class="h5"><strong>Anil </strong> (9191919)</h5></a>
+       		</div>
+		</div>   
+		book1 -->
+			 
+         
+	</div>
+	
+		
+		<!--<a href="#" data-rel="back">Back</a> |<a href="#">Services</a>-->
+		
+		<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>
+
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+		
+		
+		
+		
+     </div> 
+    <!-- /header -->
+	  </div><!-- MAIN -->
+</div>	
+</div> 
+
+	<div data-role="page" class="jqm-demos" id="showmultiplebalance" data-title="APP">
+
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div data-role="popup" id="ShowmyBalance2" class="ui-content" style="max-width:250px">
+
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out" id="mybalanceshow2">
+				
+				Loading
+			</div><!--end of card-->
+			
+			<!--
+		<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+		<a href="#" data-rel="back" class="ncp-popup-close">X</a>
+			<div class="ncp-popup-spacer ncp-popup-small ncp-popup-close-button-out">
+				<a href="#" class="ncp-popup-close">X</a>
+				<div class="ncp-popup-container">
+					 <img width="50" height="50" src="images/premium.jpg" class="premium" align="right">
+					 <div class="clear"></div>
+					<div class="ncp-popup-content roundinner spopup" align="center">
+					<img width="150" height="150" src="images/anil.png" align="center">
+						<h1 class="stitle1">Anil Rai</h1>
+						<h5 class="h5">Valid upto : 30<sup>th</sup> April 2016</h5>
+
+
+						<p class="showid">
+					 
+		Account Balance: INR 250.00<br/>
+		 
+		 Last Recharge Transaction <br/>
+		 
+		Date: 08-Apr-2016 3 p.m.<br/>
+		Amt: Rs 1000 <br/>
+			
+		 Last Service Transaction <br/>
+		 
+		Date: 08-Apr-2016 3 p.m.<br/>
+		
+		Service: Badminton <br>
+		Amt: Rs 10 <br/>
+		
+		<br/>
+		<br/>
+
+						</p>
+					</div>
+				</div>
+			</div>
+	</div>
+			-->
+	
+	</div>
+	
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+		<div class="login">
+			<h2> <a href="#" onclick="ShowHome();"><img src="images/logo.png" width="200" height="101"></a></h2>
+			 <h4 class="heading1 headingp"><span id="club_name_15"></span></h4>
+    <p><img src="images/line.png" width="600" height="32"></p>
+	<!--
+	<div class="header">
+   		 <div class="service roundinner">
+    		<div class="servicehead" style="font-size: 13px;">
+				<span id="session_n_memphoto1">
+				<script>
+					mem_photo = localStorage.session_n_memphoto;
+					if(mem_photo.length>0)
+					{
+						photo1 = '<img width="70" height="70" src="' + localStorage.session_n_memphoto + '" align="left">	';
+						document.write(photo1);
+					}
+						
+				</script></span>
+            	
+                <h1 class="stitle"><span id="session_n_name1"><script>document.write(localStorage.session_n_name);</script></span></h1>
+				<span id="session_n_validity1">
+				<script>
+					validity = localStorage.session_n_validity;
+					if(validity.length>0)
+					{
+						validity1 = '<p>Valid upto : ' + validity +'</p>';
+						document.write(validity1);
+					}	
+						
+				</script></span>
+            </div>
+   		 </div>
+    </div>
+	-->
+     <div class="clear"></div>   
+     <div class="main">	 
+	 <h1 class="white">Members List</h1>
+
+	 <div id="membaldata1">
+	
+        <!--
+		<div class="book1">
+     	 	<div class="b2full">
+      		  	<a href="#"><h5 class="h5"><strong>Anil </strong> (9191919)</h5></a>
+       		</div>
+		</div>   
+		book1 -->
+			 
+         
+	</div>
+	
+		
+		<!--<a href="#" data-rel="back">Back</a> |<a href="#">Services</a>-->
+		
+<br>
+			
+			<a href="#" onClick="ShowHome();"><img src="images/home_icon.png" style="vertical-align: middle;"></a> | <a href="#" data-rel="back"><img src="images/back_icon.png" style="vertical-align: middle;"></a> | <a href="#" onclick="BookOne();"><img src="images/services_icon.png" style="vertical-align: middle;"></a><p>&nbsp;</p></div>		
+
+		</div> <br/><br/><br/><br/> <!-- book1 -->
+     </div> <!-- MAIN -->
+    <!-- /header -->
+	  </div>
+</div>	
+</div>
+
+
+ 
+<script>
+$("#leaseinfo").hide();
+$("#corpinfo").hide();
+
+function ChangeRecord()
+{
+	//alert('hi');
+	
+	type_of_record = $('input[name=type_of_record]:checked').val();
+	
+	//document.getElementsByName('type_of_record')[0].value;
+	//alert(owner);
+	//alert(tenant);
+	//alert(type_of_record);
+	
+	//type_of_record
+	
+	if(type_of_record == 'O')
+	{
+		$("#licensee_name").hide();
+		$("#lease_from").hide();
+		$("#lease_to").hide();
+		$("#c_company_name").hide();
+		$("#c_address").hide();
+		$("#c_tel").hide();
+		$("#c_fax").hide();
+		$("#c_contact_person").hide();
+		$("#c_contact_tel").hide();
+		$("#c_contact_mobile").hide();
+		$("#c_email_id").hide();
+		$("#leaseinfo").hide();
+		$("#corpinfo").hide();
+	}
+	if(type_of_record == 'T')
+	{
+		$("#licensee_name").show();
+		$("#lease_from").show();
+		$("#lease_to").show();
+		$("#c_company_name").show();
+		$("#c_address").show();
+		$("#c_tel").show();
+		$("#c_fax").show();
+		$("#c_contact_person").show();
+		$("#c_contact_tel").show();
+		$("#c_contact_mobile").show();
+		$("#c_email_id").show();
+		$("#leaseinfo").show();
+		$("#corpinfo").show();
+	}
+}
+</script>
+
+<script>
+
+
+$('input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="time"], input[type="week"]').each(function() {
+    var el = this, type = $(el).attr('type');
+    if ($(el).val() == '') $(el).attr('type', 'text');
+    $(el).focus(function() {
+        $(el).attr('type', type);
+        el.click();
+    });
+    $(el).blur(function() {
+        if ($(el).val() == '') $(el).attr('type', 'text');
+    });
+});
+
+</script>
+
+<script>
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID1' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyID 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID1' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyID 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID2' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyID 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyID2' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyID 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance1' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyBalance 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance1' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyBalance 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance2' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyBalance 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyBalance2' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyBalance 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ContactUs' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ContactUs 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ContactUs' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ContactUs 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyTicket' ).on( 'popupafterclose', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('closing ShowmyTicket 2');
+		$("#openpopupid").val('0');
+	});
+});
+$( document ).bind ( 'pageinit', function() {
+    $( '#ShowmyTicket' ).on( 'popupafteropen', function() 
+	{
+		//setTimeout( function(){ $( '#pop2' ).popup( 'open' ) }, $( '#tout' ).val() );
+		//alert('opeing ShowmyTicket 2');
+		$("#openpopupid").val('1');
+	});
+});
+
+</script>	
+<script>
+
+$('#ShowmyID1').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyID2').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyBalance1').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyBalance2').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ContactUs').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+$('#ShowmyTicket').on({
+   popupbeforeposition: function(){
+      $('body').on('touchmove', false);
+   },
+   popupafterclose: function(){
+      $('body').off('touchmove'); 
+  }
+});
+
+</script>
+		<script src="js/jquery.dlmenu.js"></script>
+		<!--minimumResultsForSearch: Infinity, theme: "classic"-->
+<script type="text/javascript">
+  $('select').select2(
+  {minimumResultsForSearch: Infinity});
+</script>			
+		<script>
+			$(function() {
+				//$( '#dl-menu' ).dlmenu();
+			});
+		</script>
+       
+</body>
+</html>
