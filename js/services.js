@@ -24,7 +24,9 @@ function ShowHome()
 			changeHash: false,
 			reverse: true,
 			showLoadMsg: true
-		});				
+		});	
+
+		alert('ok');
 	}else
 	{
 		alert('2');
