@@ -704,9 +704,9 @@ function GetIDDetailsInfo()
 		});     		
 }
 
-$(document).on('pageinit', '#beforelogin', function()
+$(document).on('pageinit', '#11beforelogin', function()
 {  
-	$(document).on('click', '#submit_login2', function(e) 
+	$(document).on('click', '#11submit_login2', function(e) 
 	{
 		if(e.handled !== true) // This will prevent event triggering more then once
 		{
@@ -784,12 +784,7 @@ $(document).on('pageinit', '#111_beforelogin', function()
 			$("#session_n_memphoto2").html('');
 			$("#session_n_name2").html('');
 			$("#session_n_validity2").html('');
-			
-			localStorage.removeItem("session_n_memphoto");
-			localStorage.removeItem("session_n_name");
-			localStorage.removeItem("session_n_validity");
-			localStorage.removeItem("session_contact_details_id");
-		  
+					  
 			device_id= localStorage.device_uuid;
 			device_platform= localStorage.device_platform;
 			device_browser= localStorage.device_browser;
@@ -833,12 +828,20 @@ $(document).on('pageinit', '#111_beforelogin', function()
 							{
 								//navigator.notification.beep(1);
 								$.mobile.loading( "hide" );
+								$("#username2").val('');
+								$("#password").val('');
+								
 								//alert('ok');
 								//alert(result.status);
 								//alert(result.message);
 								localStorage.removeItem("session_n_memphoto");
 								localStorage.removeItem("session_n_name");
 								localStorage.removeItem("session_n_validity");
+								//localStorage.removeItem("session_contact_details_id");
+			
+								//localStorage.removeItem("session_n_memphoto");
+								//localStorage.removeItem("session_n_name");
+								//localStorage.removeItem("session_n_validity");
 								
 								session_id = result.session_id;
 								mu_id = result.mu_id;
@@ -847,65 +850,21 @@ $(document).on('pageinit', '#111_beforelogin', function()
 								contact_details_id = result.club_name + "<br>" + result.add1 + "<br>" + result.add2 + "<br>" + result.city + " - " + result.pincode + "<br>Tel: " + result.tel + "<br>Timing: " + result.timing + "<br>Weekly Off: " + result.weeklyoff + "<br><br>" + '<a href="tel:' + result.tel + '">Call Support Team</a>' + '<br>';
 								//alert(contact_details_id);
 								//console.log(contact_details_id);
-								localStorage.setItem("session_contact_details_id", contact_details_id);
 								$("#contact_details_id").html(contact_details_id);
 					
-								//return false;
-								//alert(mu_id);return false;
-								//alert(Object.keys(result.data.session_id).length);
-								//docname = result[0].tender_doc_file[j].doc_type;
-								
-								//$('#cash_cardno').empty();
-								//$('#cash_cardno').append( new Option('Select Card *', '') );
-								
-								
-								//return false;
-								
-								//$('#cash_cardno option').each(function(){ 
-							    //if($(this).text() == 'Select Card *') 
-								//	this.disabled=true;
-								//});
-								//$("#cash_cardno")[0].selectedIndex = 0;	 								
-								
-								$("#username2").val('');
-								$("#password").val('');
-								//var dt = result.data.mem_validity;
-								//var dd = dt.substring(8, 10);
-								//var mm = dt.substring(5, 7);
-								//var yy = dt.substring(0, 4);
-								
-								//var dt2 = dd + "-" + mm + "-" +yy;
-								//var d = new Date();
-								//var d2 = new Date(yy,Number(mm)-1,Number(dd));
-								
-								//d.setHours(0);
-								//d.setMinutes(0, 0, 0);
-								//d2.setHours(0);
-								//d2.setMinutes(0, 0, 0);
-								//var datediff = Math.abs(d.getTime() - d2.getTime()); // difference 
-								//var diff2= parseInt(datediff / (24 * 60 * 60 * 1000), 10); 
-								//alert(result.name);
-								//alert(dt2);return false;
-								
+								//localStorage.setItem("session_id_local", "aaa");
 								//$.mobile.changePage( "#beforelogin",null, true, true);
 								//return false;
-								localStorage.setItem("session_id_username", username);
+								//localStorage.setItem("session_id_username", username);
 								localStorage.setItem("session_id_local", session_id);
-								localStorage.setItem("session_name", urldecode(result.data.name));
-								localStorage.setItem("session_id_mu_id", mu_id);
-								localStorage.setItem("session_id_club_id", selected_club);
-								
+								//localStorage.setItem("session_name", urldecode(result.data.name));
+								//localStorage.setItem("session_id_mu_id", mu_id);
+								//localStorage.setItem("session_id_club_id", selected_club);
+								//localStorage.setItem("session_contact_details_id", contact_details_id);
+
 								GetIDDetailsInfo();
 								//GetBuildingWingInfo();
-								
-								//localStorage.setItem("session_id_mu_id", mu_id);
-								//localStorage.setItem("session_id_mu_id", mu_id);
-								//localStorage.setItem("session_id_mu_id", mu_id);
-								//localStorage.setItem("session_id_mu_id", mu_id);
-								//localStorage.setItem("session_id_mu_id", mu_id);								
-								//alert(result.email_id);
-								//$.mobile.changePage("#second");                         
-								
+																
 								//alert(result.message);
 								
 								//ShowHome();
@@ -920,12 +879,6 @@ $(document).on('pageinit', '#111_beforelogin', function()
 								////$.mobile.changePage( "#welcome",null, true, true);
 								//$("#welcome_message").html('');
 								
-								//if(diff2>0 && diff2<=30)
-								//{
-									//username = localStorage.session_id_username;
-									//alert('<li><a href="#" onclick="Renew(' + "'" + username + "'" + ');return false;">' + "Renew Subscription" +'</a> </li>');
-									//$("#welcome_message").append('<li><a href="#" onclick="Renew(' + "'" + username + "'" + ');return false;">' + "Renew Subscription" +'</a> </li>').listview("refresh");
-								//}									
 								//showMessage(result.message,null,'Welcome','OK');
 								
 							} else 
