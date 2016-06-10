@@ -724,9 +724,9 @@ $(document).on('pageinit', '#11beforelogin', function()
 	});    
 });
 
-$(document).on('pageinit', '#111_beforelogin', function()
+$(document).on('pageinit', '#beforelogin', function()
 {  
-	$(document).on('click', '#111_submit_login2', function(e) 
+	$(document).on('click', '#submit_login2', function(e) 
 	{ // catch the form's submit event
 		
 		if(e.handled !== true) // This will prevent event triggering more then once
@@ -4187,7 +4187,14 @@ function showMessage(message, callback, title, buttonName)
 	title = title || "default title";
 	buttonName = buttonName || 'OK';
 
-	if(navigator.notification && navigator.notification.alert)
+	//alert(navigator.notification);
+	//alert(navigator.notification.alert);
+	
+	if(navigator.notification == undefined)
+	{
+		alert(message);
+		//callback();
+	}else if(navigator.notification && navigator.notification.alert)
 	{
 
 		navigator.notification.alert(
@@ -4200,7 +4207,7 @@ function showMessage(message, callback, title, buttonName)
 	}else
 	{
 		alert(message);
-		callback();
+		//callback();
 	}
 }
 
