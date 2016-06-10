@@ -47,18 +47,74 @@ color: #000;
 </style>
 
  
- <script type="text/javascript">
-        $(document).ready(function()
-		{
-			document.addEventListener("deviceready", onDeviceReady, false);
-        });
+<script type="text/javascript">
+ 
+ document.addEventListener("deviceready", onDeviceReady, false);
+ //alert('ok');
+ //$.mobile.fixedToolbars.show(true);
+ 
+ function onDeviceReady() 
+ {
+	 var pushNotification;
+ 
+	  console.log("Entering index.html.onDeviceReady");
+	  //var element = document.getElementById('deviceProperties');
+	  var html = "";
+	  //html = html + "<li>" + 'Device Name: ' + device.name + "</li>";
+	  ////html = html + "<li>" + 'Device Cordova: ' + device.cordova + "</li>";
+	  ////html = html + "<li>" + 'Device phonegap: ' + device.phonegap + "</li>";
+	  //html = html + "<li>" + 'Device Platform: ' + device.platform + "</li>";
+	  //html = html + "<li>" + 'Device Version: ' + device.version + "</li>";
+	  html = html + "<li>" + 'Device ID: ' + device.uuid + "</li>";
+	  console.log(html);
+	  alert(html);
 
-        function onDeviceReady() 
+	//$("#app-status-ul").append('<li>deviceready event received</li>').listview("refresh");
+	//$("#app-status-ul2").append('<li>deviceready event received</li>').listview("refresh");
+
+		document.addEventListener("backbutton", function(e)
 		{
-			alert("inside onDeviceReady");
+			page = $.mobile.activePage[0].id;
+			//$("#app-status-ul").append('<li>backbutton event received</li>').listview("refresh");;
+			//$("#app-status-ul2").append('<li>backbutton event received</li>').listview("refresh");
+			//$("#app-status-ul2").append('<li>Page: ' + page + '</li>').listview("refresh");
+			//alert($.mobile.activePage.attr("id"));
+			//if( $("#main").length > 0)
 			
-			//ShowHome();
-        }
+			localStorage.setItem("device_platform", device.platform);
+			localStorage.setItem("device_uuid", device.uuid);
+			localStorage.setItem("device_browser", navigator.userAgent);
+		
+			if( page == 'beforelogin' || page == 'welcome')
+			{
+				// call this to get a new token each time. don't call it to reuse existing token.
+				
+				popupstatus = $("#openpopupid").val();
+				if(popupstatus == '1')
+				{
+					//alert('popup is opened");
+				}else
+				{
+					e.preventDefault();
+					navigator.app.exitApp();
+				}
+				//navigator.app.backHistory();
+			}
+			else
+			{
+				navigator.app.backHistory();
+			}
+		}, false);	
+
+		//var html = "";
+		//$("#deviceProperties").html(html);
+		//$("#deviceProperties").listview('refresh');
+
+		console.log("Exiting index.html.onDeviceReady");	
+
+		//alert(localStorage.session_id_local);
+		//ShowHome();
+ }	
         </script>
 
 
@@ -97,22 +153,6 @@ color: #000;
 		//GetBuildingWingInfo();
 	});	 
 	
-	$(document).on('pageinit', '#beforelogin', function()
-	{
-		//alert('in home');
-		
-		getAvailClub();
-		//ShowHome();
-		$(':mobile-pagecontainer').pagecontainer('change', '#beforelogin', {
-			transition: 'flip',
-			changeHash: false,
-			reverse: true,
-			showLoadMsg: true
-		});	
-			
-		//GetBuildingWingInfo();
-	});
-
 	//pageinit - pagebeforeshow
 	$(document).on('pageinit', '#welcome', function()
 	{

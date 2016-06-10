@@ -889,7 +889,13 @@ $(document).on('pageinit', '#beforelogin', function()
 								//alert(result.message);
 								
 								//ShowHome();
-								$.mobile.changePage( "#welcome",null, true, true);	
+								//$.mobile.changePage( "#welcome",null, true, true);	
+								$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
+									transition: 'flip',
+									changeHash: false,
+									reverse: true,
+									showLoadMsg: true
+								});	
 								
 								////$.mobile.changePage( "#welcome",null, true, true);
 								//$("#welcome_message").html('');
