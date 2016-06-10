@@ -130,7 +130,7 @@ color: #000;
 			alert(localStorage.getItem('session_contact_details_id'));
 			alert(localStorage.getItem('session_n_name'));
 			alert(localStorage.getItem('session_n_memphoto'));
-			alert(localStorage.getItem('session_n_validity'));
+			//alert(localStorage.getItem('session_n_validity'));
 			//alert('1');
 			//$.mobile.changePage( "#welcome",null, true, true);
 			$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
@@ -188,24 +188,25 @@ color: #000;
 		if(localStorage.getItem('session_n_name') != null)
 		{
 			mem_photo = localStorage.getItem('session_n_memphoto');
-			validity = localStorage.getItem('session_n_validity');
+			//validity = localStorage.getItem('session_n_validity');
 			name = urldecode(localStorage.getItem('session_n_name'));
 			var photo1 = validity1 = '';
 			if(mem_photo.length>0)
 			{
 				photo1 = '<img width="70" height="70" src="' + mem_photo + '" align="left">	';
 			}
-			if(validity.length>0)
-			{
-				validity1 = '<p>Valid upto : ' + validity +'</p>';
-			}	
+			//if(validity.length>0)
+			//{
+			//	validity1 = '<p>Valid upto : ' + validity +'</p>';
+			//}	
 			//alert(name);
 			$("#session_n_name2").html(name);	
 			$("#session_n_validity2").html(validity);
 			$("#session_n_memphoto2").html(photo1);
 			$("#contact_photo").html(photo1);
 			$("#contact_name").html(name);
-			$("#contact_validity").html(validity);
+			//$("#contact_validity").html(validity);
+			$("#contact_validity").html(validity1);
 			$("#photo_contact").html(photo1);
 		}
 		//alert(localStorage.getItem('session_contact_details_id'));
