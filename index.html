@@ -67,7 +67,7 @@ color: #000;
 	  //html = html + "<li>" + 'Device Version: ' + device.version + "</li>";
 	  html = html + "<li>" + 'Device ID: ' + device.uuid + "</li>";
 	  console.log(html);
-	  alert(html);
+	  //alert(html);
 
 	//$("#app-status-ul").append('<li>deviceready event received</li>').listview("refresh");
 	//$("#app-status-ul2").append('<li>deviceready event received</li>').listview("refresh");
@@ -126,7 +126,7 @@ color: #000;
 		//alert('in home');	
 		if(localStorage.session_id_local != undefined)
 		{
-			alert('1');
+			//alert('1');
 			//$.mobile.changePage( "#welcome",null, true, true);
 			$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
 				transition: 'flip',
@@ -135,10 +135,10 @@ color: #000;
 				showLoadMsg: true
 			});	
 
-			alert('ok');
+			//alert('ok');
 		}else
 		{
-			alert('2');
+			//alert('2');
 			getAvailClub();
 			
 			//$.mobile.changePage( "#beforelogin",null, true, true);

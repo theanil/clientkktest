@@ -17,7 +17,7 @@ function ShowHome()
 	//alert(localStorage.session_id_local);
 	if(localStorage.session_id_local != undefined)
 	{
-		alert('11');
+		//alert('11');
 		//$.mobile.changePage( "#welcome",null, true, true);
 		$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
 			transition: 'flip',
@@ -29,7 +29,7 @@ function ShowHome()
 		//alert('ok');
 	}else
 	{
-		alert('22');
+		//alert('22');
 		//$.mobile.changePage( "#beforelogin",null, true, true);
 		$(':mobile-pagecontainer').pagecontainer('change', '#beforelogin', {
 			transition: 'flip',
@@ -855,12 +855,12 @@ $(document).on('pageinit', '#beforelogin', function()
 								//localStorage.setItem("session_id_local", "aaa");
 								//$.mobile.changePage( "#beforelogin",null, true, true);
 								//return false;
-								//localStorage.setItem("session_id_username", username);
+								localStorage.setItem("session_id_username", username);
 								localStorage.setItem("session_id_local", session_id);
-								//localStorage.setItem("session_name", urldecode(result.data.name));
-								//localStorage.setItem("session_id_mu_id", mu_id);
-								//localStorage.setItem("session_id_club_id", selected_club);
-								//localStorage.setItem("session_contact_details_id", contact_details_id);
+								localStorage.setItem("session_name", urldecode(result.data.name));
+								localStorage.setItem("session_id_mu_id", mu_id);
+								localStorage.setItem("session_id_club_id", selected_club);
+								localStorage.setItem("session_contact_details_id", contact_details_id);
 
 								GetIDDetailsInfo();
 								//GetBuildingWingInfo();
