@@ -17,7 +17,7 @@ function ShowHome()
 	//alert(localStorage.session_id_local);
 	if(localStorage.session_id_local != undefined)
 	{
-		//alert('1');
+		alert('11');
 		//$.mobile.changePage( "#welcome",null, true, true);
 		$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
 			transition: 'flip',
@@ -29,7 +29,7 @@ function ShowHome()
 		//alert('ok');
 	}else
 	{
-		//alert('2');
+		alert('22');
 		//$.mobile.changePage( "#beforelogin",null, true, true);
 		$(':mobile-pagecontainer').pagecontainer('change', '#beforelogin', {
 			transition: 'flip',

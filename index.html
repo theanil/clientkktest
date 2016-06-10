@@ -153,6 +153,10 @@ color: #000;
 		//GetBuildingWingInfo();
 	});	 
 	
+	$(document).on('pageinit', '#beforelogin', function()
+	{
+		getAvailClub();
+	});
 	//pageinit - pagebeforeshow
 	$(document).on('pageinit', '#welcome', function()
 	{
