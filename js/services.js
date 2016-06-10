@@ -707,6 +707,26 @@ function GetIDDetailsInfo()
 $(document).on('pageinit', '#beforelogin', function()
 {  
 	$(document).on('click', '#submit_login2', function(e) 
+	{
+		if(e.handled !== true) // This will prevent event triggering more then once
+		{
+			localStorage.setItem("session_id_local", "aaa");
+			$(':mobile-pagecontainer').pagecontainer('change', '#welcome', {
+				transition: 'flip',
+				changeHash: false,
+				reverse: true,
+				showLoadMsg: true
+			});	
+		e.handled = true;
+		}
+		
+		return false;
+	});    
+});
+
+$(document).on('pageinit', '#111_beforelogin', function()
+{  
+	$(document).on('click', '#111_submit_login2', function(e) 
 	{ // catch the form's submit event
 		
 		if(e.handled !== true) // This will prevent event triggering more then once
