@@ -126,10 +126,10 @@ color: #000;
 		//alert('in home');	
 		if(localStorage.session_id_local != undefined)
 		{
-			alert(localStorage.getItem('session_club_info'));
-			alert(localStorage.getItem('session_contact_details_id'));
-			alert(localStorage.getItem('session_n_name'));
-			alert(localStorage.getItem('session_n_memphoto'));
+			//alert(localStorage.getItem('session_club_info'));
+			//alert(localStorage.getItem('session_contact_details_id'));
+			//alert(localStorage.getItem('session_n_name'));
+			//alert(localStorage.getItem('session_n_memphoto'));
 			//alert(localStorage.getItem('session_n_validity'));
 			//alert('1');
 			//$.mobile.changePage( "#welcome",null, true, true);
@@ -163,27 +163,27 @@ color: #000;
 		getAvailClub();
 	});
 	//pageinit - pagebeforeshow
-	$(document).on('pageinit', '#welcome1', function()
+	$(document).on('pageinit', '#welcome', function()
 	{
 		//alert('aa');
 		//GetBuildingWingInfo();
 		//ShowHome();
 		$("#club_name_1").html(localStorage.getItem('session_club_info'));
-		$("#club_name_2").html(localStorage.getItem('session_club_info'));
-		$("#club_name_3").html(localStorage.getItem('session_club_info'));
-		$("#club_name_4").html(localStorage.getItem('session_club_info'));
-		$("#club_name_5").html(localStorage.getItem('session_club_info'));
-		$("#club_name_6").html(localStorage.getItem('session_club_info'));
-		$("#club_name_7").html(localStorage.getItem('session_club_info'));
-		$("#club_name_8").html(localStorage.getItem('session_club_info'));
-		$("#club_name_9").html(localStorage.getItem('session_club_info'));
-		$("#club_name_10").html(localStorage.getItem('session_club_info'));
-		$("#club_name_11").html(localStorage.getItem('session_club_info'));
-		$("#club_name_12").html(localStorage.getItem('session_club_info'));
-		$("#club_name_13").html(localStorage.getItem('session_club_info'));
-		$("#club_name_14").html(localStorage.getItem('session_club_info'));
-		$("#club_name_15").html(localStorage.getItem('session_club_info'));
-		$("#contact_details_id").html(localStorage.getItem('session_contact_details_id'));
+		//$("#club_name_2").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_3").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_4").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_5").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_6").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_7").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_8").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_9").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_10").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_11").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_12").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_13").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_14").html(localStorage.getItem('session_club_info'));
+		//$("#club_name_15").html(localStorage.getItem('session_club_info'));
+		//$("#contact_details_id").html(localStorage.getItem('session_contact_details_id'));
 		
 		if(localStorage.getItem('session_n_name') != null)
 		{
@@ -191,23 +191,22 @@ color: #000;
 			validity = localStorage.getItem('session_n_validity');
 			name = urldecode(localStorage.getItem('session_n_name'));
 			var photo1 = validity1 = '';
-			if(mem_photo.length>0)
-			{
-				photo1 = '<img width="70" height="70" src="' + mem_photo + '" align="left">	';
-			}
-			if(validity.length>0)
-			{
-				validity1 = '<p>Valid upto : ' + validity +'</p>';
-			}	
+			//if(mem_photo.length>0)
+			//{
+			//	photo1 = '<img width="70" height="70" src="' + mem_photo + '" align="left">	';
+			//}
+			//if(validity.length>0)
+			//{
+			//	validity1 = '<p>Valid upto : ' + validity +'</p>';
+			//}	
 			//alert(name);
 			$("#session_n_name2").html(name);	
-			$("#session_n_validity2").html(validity);
+			//$("#session_n_validity2").html(validity);
 			$("#session_n_memphoto2").html(photo1);
-			$("#contact_photo").html(photo1);
-			$("#contact_name").html(name);
-			//$("#contact_validity").html(validity);
-			$("#contact_validity").html(validity1);
-			$("#photo_contact").html(photo1);
+			//$("#contact_photo").html(photo1);
+			//$("#contact_name").html(name);
+			//$("#contact_validity").html(validity1);
+			//$("#photo_contact").html(photo1);
 		}
 		//alert(localStorage.getItem('session_contact_details_id'));
 		
